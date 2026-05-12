@@ -23,19 +23,21 @@ export default function MyTask() {
   const handleStart = async (taskId) => {
     try {
       await api.put(`/tasks/${taskId}`, { status: "IN_PROGRESS" });
-      setTasks(tasks.map(t =>
-        t.id === taskId ? { ...t, status: "IN_PROGRESS" } : t
-      ));
+      setTasks(prev =>
+        prev.map(t => t.id === taskId ? { ...t, status: "IN_PROGRESS" } : t)
+      );
     } catch (err) {
+      setMessage("❌ Failed to start task.");
       console.error(err);
     }
   };
 
   // ✅ Submit proof → SUBMITTED
+  // Calls POST /tasks/{id}/submit-proof (add this endpoint to TaskController)
   const handleSubmitProof = async (taskId) => {
     const proof = proofForm[taskId];
     if (!proof?.proofLink || !proof?.proofDescription) {
-      setMessage("Both GitHub link and description are required.");
+      setMessage("⚠️ Both GitHub link and description are required.");
       return;
     }
     try {
@@ -43,29 +45,30 @@ export default function MyTask() {
         proofLink: proof.proofLink,
         proofDescription: proof.proofDescription,
       });
-      setTasks(tasks.map(t =>
-        t.id === taskId ? { ...t, status: "SUBMITTED" } : t
-      ));
+      setTasks(prev =>
+        prev.map(t => t.id === taskId ? { ...t, status: "SUBMITTED" } : t)
+      );
       setShowProofModal(null);
+      setProofForm(prev => {
+        const copy = { ...prev };
+        delete copy[taskId];
+        return copy;
+      });
       setMessage("✅ Proof submitted! Waiting for admin approval.");
     } catch (err) {
-      setMessage("❌ Failed to submit proof.");
+      const errMsg = err?.response?.data || "Failed to submit proof.";
+      setMessage(`❌ ${errMsg}`);
       console.error(err);
     }
   };
 
-  const getStatusColor = (status) => {
-    if (status === "COMPLETED") return "text-green-400";
-    if (status === "IN_PROGRESS") return "text-yellow-400";
-    if (status === "SUBMITTED") return "text-blue-400";
-    return "text-gray-400";
-  };
-
   const getStatusBadge = (status) => {
-    if (status === "COMPLETED") return "bg-green-900 text-green-400";
-    if (status === "IN_PROGRESS") return "bg-yellow-900 text-yellow-400";
-    if (status === "SUBMITTED") return "bg-blue-900 text-blue-400";
-    return "bg-gray-800 text-gray-400";
+    switch (status) {
+      case "COMPLETED":  return "bg-green-900 text-green-400";
+      case "IN_PROGRESS": return "bg-yellow-900 text-yellow-400";
+      case "SUBMITTED":  return "bg-blue-900 text-blue-400";
+      default:           return "bg-gray-800 text-gray-400";
+    }
   };
 
   if (loading) return <p className="text-white p-6">Loading...</p>;
@@ -102,6 +105,12 @@ export default function MyTask() {
                           ❌ Admin comment: {task.adminComment}
                         </p>
                       )}
+                      {/* Show previously submitted proof link if rejected */}
+                      {task.status === "IN_PROGRESS" && task.proofLink === null && task.adminComment && (
+                        <p className="text-xs text-yellow-400 mt-1">
+                          ⚠️ Your proof was rejected. Please resubmit.
+                        </p>
+                      )}
                     </div>
                     <span className={`text-xs px-3 py-1 rounded-full font-semibold ${getStatusBadge(task.status)}`}>
                       {task.status}
@@ -109,7 +118,7 @@ export default function MyTask() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="mt-3 flex gap-2">
+                  <div className="mt-3 flex gap-2 flex-wrap">
 
                     {/* PENDING → Start */}
                     {task.status === "PENDING" && (
@@ -124,7 +133,10 @@ export default function MyTask() {
                     {/* IN_PROGRESS → Submit Proof */}
                     {task.status === "IN_PROGRESS" && (
                       <button
-                        onClick={() => setShowProofModal(task.id)}
+                        onClick={() => {
+                          setShowProofModal(task.id);
+                          setMessage("");
+                        }}
                         className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition"
                       >
                         Submit Proof
@@ -156,13 +168,11 @@ export default function MyTask() {
                         <input
                           className="bg-gray-700 text-white p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="https://github.com/your-repo"
-                          onChange={(e) => setProofForm({
-                            ...proofForm,
-                            [task.id]: {
-                              ...proofForm[task.id],
-                              proofLink: e.target.value
-                            }
-                          })}
+                          value={proofForm[task.id]?.proofLink || ""}
+                          onChange={(e) => setProofForm(prev => ({
+                            ...prev,
+                            [task.id]: { ...prev[task.id], proofLink: e.target.value }
+                          }))}
                         />
                       </div>
 
@@ -171,13 +181,11 @@ export default function MyTask() {
                         <textarea
                           className="bg-gray-700 text-white p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 h-20 resize-none"
                           placeholder="Describe what you did..."
-                          onChange={(e) => setProofForm({
-                            ...proofForm,
-                            [task.id]: {
-                              ...proofForm[task.id],
-                              proofDescription: e.target.value
-                            }
-                          })}
+                          value={proofForm[task.id]?.proofDescription || ""}
+                          onChange={(e) => setProofForm(prev => ({
+                            ...prev,
+                            [task.id]: { ...prev[task.id], proofDescription: e.target.value }
+                          }))}
                         />
                       </div>
 
@@ -189,7 +197,10 @@ export default function MyTask() {
                           Submit
                         </button>
                         <button
-                          onClick={() => setShowProofModal(null)}
+                          onClick={() => {
+                            setShowProofModal(null);
+                            setMessage("");
+                          }}
                           className="bg-gray-600 hover:bg-gray-500 text-white text-sm px-4 py-2 rounded-lg transition"
                         >
                           Cancel

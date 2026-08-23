@@ -1,127 +1,106 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import AuthShell from "../components/AuthShell";
+
+const field =
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 " +
+  "placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20";
+
+const ROLES = [
+  { key: "EMPLOYEE", label: "Employee" },
+  { key: "ADMIN", label: "Admin" },
+];
 
 export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "EMPLOYEE",
-  });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "EMPLOYEE" });
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
+      setError("Fill in every field.");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Use at least 6 characters for your password.");
+      return;
+    }
     setError("");
+    setBusy(true);
     try {
       await api.post("/auth/register", form);
-      alert("Registered successfully");
-      navigate("/");
+      setNotice("Account created. Taking you to sign in…");
+      setTimeout(() => navigate("/"), 900);
     } catch (err) {
-      console.error(err);
-      setError("Error registering. Try again.");
+      const data = err.response?.data;
+      setError(typeof data === "string" && data ? data : "Could not register. Try again.");
+    } finally {
+      setBusy(false);
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-950">
-      <div className="bg-gray-800 p-10 rounded-2xl w-96 shadow-2xl flex flex-col gap-4">
-
-        {/* Logo + Title */}
-        <div className="flex items-center gap-3 mb-2">
-          <div className="bg-blue-600 p-2 rounded-xl">
-            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-white font-bold text-lg leading-tight">PerfTrack AI</h1>
-            <p className="text-gray-400 text-xs">Create your account</p>
-          </div>
-        </div>
-
-        {/* Role Toggle */}
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setForm({ ...form, role: "EMPLOYEE" })}
-            className={`flex-1 py-2 rounded-lg font-semibold text-sm transition ${
-              form.role === "EMPLOYEE"
-                ? "bg-gray-600 text-white"
-                : "bg-gray-700 text-gray-400 hover:bg-gray-600"
-            }`}
-          >
-            Employee
-          </button>
-          <button
-            type="button"
-            onClick={() => setForm({ ...form, role: "ADMIN" })}
-            className={`flex-1 py-2 rounded-lg font-semibold text-sm transition ${
-              form.role === "ADMIN"
-                ? "bg-gray-600 text-white"
-                : "bg-gray-700 text-gray-400 hover:bg-gray-600"
-            }`}
-          >
-            Admin
-          </button>
-        </div>
-
-        {/* Error */}
-        {error && <p className="text-red-400 text-sm">{error}</p>}
-
-        {/* Name */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Full Name</label>
-          <input
-            className="bg-gray-700 text-white p-3 rounded-lg text-sm placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="John Doe"
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-        </div>
-
-        {/* Email */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Email</label>
-          <input
-            className="bg-gray-700 text-white p-3 rounded-lg text-sm placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="your@company.com"
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-        </div>
-
-        {/* Password */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Password</label>
-          <input
-            type="password"
-            className="bg-gray-700 text-white p-3 rounded-lg text-sm placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="••••••••"
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
-        </div>
-
-        {/* Register Button */}
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition"
-        >
-          Create Account
-        </button>
-
-        {/* Login link */}
-        <p className="text-center text-sm text-gray-400">
+    <AuthShell
+      title="Create account"
+      subtitle="Register as an employee or an admin."
+      footer={
+        <>
           Already have an account?{" "}
-          <span
-            className="text-blue-400 cursor-pointer hover:underline"
-            onClick={() => navigate("/")}
-          >
-            Sign in
-          </span>
-        </p>
+          <Link to="/" className="font-medium text-indigo-600 hover:text-indigo-700">Sign in</Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <span className="mb-1.5 block text-xs font-medium text-slate-700">Register as</span>
+          <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1" role="group">
+            {ROLES.map((r) => (
+              <button key={r.key} type="button"
+                onClick={() => setForm({ ...form, role: r.key })}
+                aria-pressed={form.role === r.key}
+                className={`rounded-md py-2 text-sm font-medium transition ${
+                  form.role === r.key
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}>
+                {r.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      </div>
-    </div>
+        <div>
+          <label htmlFor="r-name" className="mb-1.5 block text-xs font-medium text-slate-700">Full name</label>
+          <input id="r-name" value={form.name} onChange={set("name")} placeholder="Sanjay Kumar" className={field} />
+        </div>
+
+        <div>
+          <label htmlFor="r-email" className="mb-1.5 block text-xs font-medium text-slate-700">Email</label>
+          <input id="r-email" type="email" autoComplete="username" value={form.email}
+            onChange={set("email")} placeholder="you@company.com" className={field} />
+        </div>
+
+        <div>
+          <label htmlFor="r-pass" className="mb-1.5 block text-xs font-medium text-slate-700">Password</label>
+          <input id="r-pass" type="password" autoComplete="new-password" value={form.password}
+            onChange={set("password")} placeholder="at least 6 characters" className={field} />
+        </div>
+
+        {error && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
+        {notice && <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-800">{notice}</p>}
+
+        <button type="submit" disabled={busy}
+          className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white shadow-sm
+                     transition hover:bg-indigo-700 disabled:opacity-60">
+          {busy ? "Creating…" : "Create account"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

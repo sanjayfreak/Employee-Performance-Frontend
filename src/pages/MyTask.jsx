@@ -1,220 +1,221 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { getUser } from "../services/auth";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Shell from "../components/Shell";
+import StatusPill from "../components/StatusPill";
+import { STATUS_ORDER, statusOf, formatDate, isOverdue } from "../theme";
+
+const field =
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 " +
+  "placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20";
 
 export default function MyTask() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [proofForm, setProofForm] = useState({});
-  const [showProofModal, setShowProofModal] = useState(null);
-  const [message, setMessage] = useState("");
+  const [filter, setFilter] = useState("ALL");
+  const [proofFor, setProofFor] = useState(null);
+  const [proof, setProof] = useState({ proofLink: "", proofDescription: "" });
+  const [busy, setBusy] = useState(false);
+  const [banner, setBanner] = useState(null); // { tone: 'ok'|'err', text }
+
+  const user = getUser();
 
   useEffect(() => {
-    const user = getUser();
+    if (!user?.userId) return;
     api.get(`/tasks/user/${user.userId}`)
-      .then(res => setTasks(res.data))
-      .catch(err => console.error(err))
+      .then((res) => setTasks(res.data || []))
+      .catch(() => setBanner({ tone: "err", text: "Couldn't load your tasks." }))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ Move PENDING → IN_PROGRESS
-  const handleStart = async (taskId) => {
+  const start = async (id) => {
+    const before = tasks;
+    setTasks((p) => p.map((t) => (t.id === id ? { ...t, status: "IN_PROGRESS" } : t)));
     try {
-      await api.put(`/tasks/${taskId}`, { status: "IN_PROGRESS" });
-      setTasks(prev =>
-        prev.map(t => t.id === taskId ? { ...t, status: "IN_PROGRESS" } : t)
-      );
-    } catch (err) {
-      setMessage("❌ Failed to start task.");
-      console.error(err);
+      await api.put(`/tasks/${id}`, { status: "IN_PROGRESS" });
+    } catch {
+      setTasks(before);
+      setBanner({ tone: "err", text: "Couldn't start that task." });
     }
   };
 
-  // ✅ Submit proof → SUBMITTED
-  // Calls POST /tasks/{id}/submit-proof (add this endpoint to TaskController)
-  const handleSubmitProof = async (taskId) => {
-    const proof = proofForm[taskId];
-    if (!proof?.proofLink || !proof?.proofDescription) {
-      setMessage("⚠️ Both GitHub link and description are required.");
+  const openProof = (task) => {
+    setProofFor(task.id);
+    setProof({ proofLink: task.proofLink || "", proofDescription: task.proofDescription || "" });
+    setBanner(null);
+  };
+
+  const submitProof = async (e) => {
+    e.preventDefault();
+    if (!proof.proofLink.trim() || !proof.proofDescription.trim()) {
+      setBanner({ tone: "err", text: "Both the link and a description are required." });
       return;
     }
+    setBusy(true);
     try {
-      await api.post(`/tasks/${taskId}/submit-proof`, {
-        proofLink: proof.proofLink,
-        proofDescription: proof.proofDescription,
-      });
-      setTasks(prev =>
-        prev.map(t => t.id === taskId ? { ...t, status: "SUBMITTED" } : t)
-      );
-      setShowProofModal(null);
-      setProofForm(prev => {
-        const copy = { ...prev };
-        delete copy[taskId];
-        return copy;
-      });
-      setMessage("✅ Proof submitted! Waiting for admin approval.");
+      await api.post(`/tasks/${proofFor}/submit-proof`, proof);
+      setTasks((p) => p.map((t) => (t.id === proofFor ? { ...t, status: "SUBMITTED", ...proof } : t)));
+      setProofFor(null);
+      setBanner({ tone: "ok", text: "Proof submitted — waiting for admin review." });
     } catch (err) {
-      const errMsg = err?.response?.data || "Failed to submit proof.";
-      setMessage(`❌ ${errMsg}`);
-      console.error(err);
+      const msg = err?.response?.data;
+      setBanner({ tone: "err", text: typeof msg === "string" && msg ? msg : "Couldn't submit that." });
+    } finally {
+      setBusy(false);
     }
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "COMPLETED":  return "bg-green-900 text-green-400";
-      case "IN_PROGRESS": return "bg-yellow-900 text-yellow-400";
-      case "SUBMITTED":  return "bg-blue-900 text-blue-400";
-      default:           return "bg-gray-800 text-gray-400";
-    }
-  };
+  const counts = STATUS_ORDER.reduce((a, k) => {
+    a[k] = tasks.filter((t) => t.status === k).length;
+    return a;
+  }, {});
+  const visible = filter === "ALL" ? tasks : tasks.filter((t) => t.status === filter);
 
-  if (loading) return <p className="text-white p-6">Loading...</p>;
+  const tabs = [
+    { key: "ALL", label: "All", count: tasks.length },
+    ...STATUS_ORDER.map((k) => ({ key: k, label: statusOf(k).label, count: counts[k] })),
+  ];
 
   return (
-    <div className="flex">
-      <Sidebar role="EMPLOYEE" />
-      <div className="flex-1 bg-black text-white min-h-screen">
-        <Navbar />
-        <div className="p-6">
-          <h1 className="text-xl font-bold mb-6">My Tasks</h1>
-
-          {message && (
-            <p className="mb-4 text-sm p-3 bg-gray-800 rounded-lg">{message}</p>
-          )}
-
-          {tasks.length === 0 ? (
-            <p className="opacity-60">No tasks assigned yet.</p>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {tasks.map(task => (
-                <div key={task.id} className="bg-gray-900 p-4 rounded-xl">
-
-                  {/* Task Info */}
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg">{task.name}</h3>
-                      <p className="text-sm text-gray-400 mt-1">{task.description}</p>
-                      {task.dueDate && (
-                        <p className="text-xs text-gray-500 mt-1">📅 Due: {task.dueDate}</p>
-                      )}
-                      {task.adminComment && (
-                        <p className="text-xs text-red-400 mt-2">
-                          ❌ Admin comment: {task.adminComment}
-                        </p>
-                      )}
-                      {/* Show previously submitted proof link if rejected */}
-                      {task.status === "IN_PROGRESS" && task.proofLink === null && task.adminComment && (
-                        <p className="text-xs text-yellow-400 mt-1">
-                          ⚠️ Your proof was rejected. Please resubmit.
-                        </p>
-                      )}
-                    </div>
-                    <span className={`text-xs px-3 py-1 rounded-full font-semibold ${getStatusBadge(task.status)}`}>
-                      {task.status}
-                    </span>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="mt-3 flex gap-2 flex-wrap">
-
-                    {/* PENDING → Start */}
-                    {task.status === "PENDING" && (
-                      <button
-                        onClick={() => handleStart(task.id)}
-                        className="bg-yellow-600 hover:bg-yellow-500 text-white text-sm px-4 py-2 rounded-lg transition"
-                      >
-                        Start Task
-                      </button>
-                    )}
-
-                    {/* IN_PROGRESS → Submit Proof */}
-                    {task.status === "IN_PROGRESS" && (
-                      <button
-                        onClick={() => {
-                          setShowProofModal(task.id);
-                          setMessage("");
-                        }}
-                        className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition"
-                      >
-                        Submit Proof
-                      </button>
-                    )}
-
-                    {/* SUBMITTED — waiting */}
-                    {task.status === "SUBMITTED" && (
-                      <p className="text-blue-400 text-sm">
-                        ⏳ Waiting for admin approval...
-                      </p>
-                    )}
-
-                    {/* COMPLETED — locked */}
-                    {task.status === "COMPLETED" && (
-                      <p className="text-green-400 text-sm">
-                        ✅ Task completed and approved!
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Proof Modal (inline) */}
-                  {showProofModal === task.id && (
-                    <div className="mt-4 bg-gray-800 p-4 rounded-xl flex flex-col gap-3">
-                      <h4 className="font-semibold text-blue-400">Submit Proof of Work</h4>
-
-                      <div className="flex flex-col gap-1">
-                        <label className="text-gray-400 text-sm">GitHub Link</label>
-                        <input
-                          className="bg-gray-700 text-white p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="https://github.com/your-repo"
-                          value={proofForm[task.id]?.proofLink || ""}
-                          onChange={(e) => setProofForm(prev => ({
-                            ...prev,
-                            [task.id]: { ...prev[task.id], proofLink: e.target.value }
-                          }))}
-                        />
-                      </div>
-
-                      <div className="flex flex-col gap-1">
-                        <label className="text-gray-400 text-sm">Description</label>
-                        <textarea
-                          className="bg-gray-700 text-white p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 h-20 resize-none"
-                          placeholder="Describe what you did..."
-                          value={proofForm[task.id]?.proofDescription || ""}
-                          onChange={(e) => setProofForm(prev => ({
-                            ...prev,
-                            [task.id]: { ...prev[task.id], proofDescription: e.target.value }
-                          }))}
-                        />
-                      </div>
-
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleSubmitProof(task.id)}
-                          className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg transition"
-                        >
-                          Submit
-                        </button>
-                        <button
-                          onClick={() => {
-                            setShowProofModal(null);
-                            setMessage("");
-                          }}
-                          className="bg-gray-600 hover:bg-gray-500 text-white text-sm px-4 py-2 rounded-lg transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              ))}
-            </div>
-          )}
+    <Shell role="EMPLOYEE" title="My Tasks" subtitle="Start work, then submit proof for review">
+      {banner && (
+        <div
+          role="alert"
+          className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${
+            banner.tone === "ok"
+              ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
+              : "border border-amber-200 bg-amber-50 text-amber-900"
+          }`}
+        >
+          <span className="flex-1">{banner.text}</span>
+          <button onClick={() => setBanner(null)} aria-label="Dismiss" className="opacity-70 hover:opacity-100">✕</button>
         </div>
-      </div>
-    </div>
+      )}
+
+      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-wrap items-center gap-2 border-b border-slate-100 px-5 py-4">
+          <div className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setFilter(t.key)}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
+                  filter === t.key ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                {t.label}
+                <span className="ml-1.5 tabular-nums text-slate-400">{t.count}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="space-y-3 p-5">
+            {[0, 1, 2].map((i) => <div key={i} className="h-16 animate-pulse rounded-xl bg-slate-100" />)}
+          </div>
+        ) : visible.length === 0 ? (
+          <p className="px-5 py-16 text-center text-sm text-slate-500">
+            {tasks.length === 0 ? "No tasks assigned yet." : "Nothing in this view."}
+          </p>
+        ) : (
+          <ul className="divide-y divide-slate-100">
+            {visible.map((task) => {
+              const late = isOverdue(task.dueDate, task.status);
+              return (
+                <li key={task.id} className="px-5 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-900">{task.name}</p>
+                      {task.description && (
+                        <p className="mt-0.5 text-xs text-slate-500">{task.description}</p>
+                      )}
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <StatusPill status={task.status} />
+                        {task.dueDate && (
+                          <span className={`text-[11px] ${late ? "font-medium text-red-600" : "text-slate-500"}`}>
+                            {late ? "Overdue · " : "Due "}{formatDate(task.dueDate)}
+                          </span>
+                        )}
+                      </div>
+
+                      {task.adminComment && task.status !== "COMPLETED" && (
+                        <div className="mt-3 rounded-lg bg-red-50 px-3 py-2">
+                          <p className="text-[11px] font-medium text-red-800">Sent back by admin</p>
+                          <p className="mt-0.5 text-xs text-red-700">{task.adminComment}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="shrink-0">
+                      {task.status === "PENDING" && (
+                        <button onClick={() => start(task.id)}
+                          className="rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-medium text-white transition hover:bg-indigo-700">
+                          Start task
+                        </button>
+                      )}
+                      {task.status === "IN_PROGRESS" && (
+                        <button onClick={() => openProof(task)}
+                          className="rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-medium text-white transition hover:bg-indigo-700">
+                          Submit proof
+                        </button>
+                      )}
+                      {task.status === "COMPLETED" && task.qualityRating > 0 && (
+                        <span className="text-xs text-slate-500">Rated {task.qualityRating}/5</span>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {proofFor && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center">
+          <div className="absolute inset-0" onClick={() => setProofFor(null)} aria-hidden="true" />
+          <div role="dialog" aria-modal="true" aria-label="Submit proof of work"
+            className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+            <h2 className="text-base font-semibold text-slate-900">Submit proof of work</h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              An admin reviews this and either approves the task or sends it back.
+            </p>
+
+            <form onSubmit={submitProof} className="mt-5 space-y-4">
+              <div>
+                <label htmlFor="p-link" className="mb-1.5 block text-xs font-medium text-slate-700">
+                  Repository or PR link
+                </label>
+                <input id="p-link" value={proof.proofLink}
+                  onChange={(e) => setProof({ ...proof, proofLink: e.target.value })}
+                  placeholder="https://github.com/you/repo" className={field} />
+              </div>
+              <div>
+                <label htmlFor="p-desc" className="mb-1.5 block text-xs font-medium text-slate-700">
+                  What did you do?
+                </label>
+                <textarea id="p-desc" rows={3} value={proof.proofDescription}
+                  onChange={(e) => setProof({ ...proof, proofDescription: e.target.value })}
+                  placeholder="Summarise the work so the reviewer doesn't have to guess."
+                  className={`${field} resize-none`} />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-1">
+                <button type="button" onClick={() => setProofFor(null)}
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+                  Cancel
+                </button>
+                <button type="submit" disabled={busy}
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-60">
+                  {busy ? "Submitting…" : "Submit for review"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </Shell>
   );
 }

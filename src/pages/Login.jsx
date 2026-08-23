@@ -1,136 +1,114 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { saveUser } from "../services/auth";
+import AuthShell from "../components/AuthShell";
+
+const field =
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 " +
+  "placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20";
+
+const ROLES = [
+  { key: "EMPLOYEE", label: "Employee" },
+  { key: "ADMIN", label: "Admin" },
+];
 
 export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [role, setRole] = useState("EMPLOYEE");
   const [error, setError] = useState("");
-  const [selectedRole, setSelectedRole] = useState("EMPLOYEE");
+  const [busy, setBusy] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!form.email.trim() || !form.password.trim()) {
+      setError("Enter your email and password.");
+      return;
+    }
     setError("");
-    console.log("Sending role:", selectedRole); // 👈 debug
+    setBusy(true);
     try {
-      const response = await api.post("/auth/login", {
+      const res = await api.post("/auth/login", {
         email: form.email,
         password: form.password,
-        role: selectedRole,
+        role,
       });
-
-      const { userId, name, role } = response.data;
-      console.log("userId:", userId, "name:", name, "role:", role);
-      saveUser({ userId, name, role });
-
-      if (role === "ADMIN") {
-        navigate("/admin");
-      } else {
-        navigate("/employee");
-      }
+      const { userId, name, role: returnedRole } = res.data;
+      saveUser({ userId, name, role: returnedRole, email: form.email });
+      navigate(returnedRole === "ADMIN" ? "/admin" : "/employee");
     } catch (err) {
-      if (err.response?.status === 403) {
-        setError("Access denied. Wrong role selected.");
-      } else {
-        setError("Invalid email or password");
-      }
-      console.error(err);
+      setError(
+        err.response?.status === 403
+          ? `That account isn't registered as ${role === "ADMIN" ? "an admin" : "an employee"}.`
+          : "Invalid email or password."
+      );
+    } finally {
+      setBusy(false);
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-950">
-      <div className="bg-gray-800 p-10 rounded-2xl w-96 shadow-2xl flex flex-col gap-4">
-
-        {/* Logo + Title */}
-        <div className="flex items-center gap-3 mb-2">
-          <div className="bg-blue-600 p-2 rounded-xl">
-            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-            </svg>
+    <AuthShell
+      title="Sign in"
+      subtitle="Choose your role, then enter your details."
+      footer={
+        <>
+          Don't have an account?{" "}
+          <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-700">
+            Register
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div>
+          <span className="mb-1.5 block text-xs font-medium text-slate-700">Sign in as</span>
+          <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1" role="group">
+            {ROLES.map((r) => (
+              <button
+                key={r.key}
+                type="button"
+                onClick={() => setRole(r.key)}
+                aria-pressed={role === r.key}
+                className={`rounded-md py-2 text-sm font-medium transition ${
+                  role === r.key
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
           </div>
-          <div>
-            <h1 className="text-white font-bold text-lg leading-tight">PerfTrack AI</h1>
-            <p className="text-gray-400 text-xs">AI-powered employee performance monitoring</p>
-          </div>
         </div>
 
-        {/* Role Toggle */}
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setSelectedRole("EMPLOYEE")}
-            className={`flex-1 py-2 rounded-lg font-semibold text-sm transition ${
-              selectedRole === "EMPLOYEE"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 text-gray-400 hover:bg-gray-600"
-            }`}
-          >
-            Employee
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedRole("ADMIN")}
-            className={`flex-1 py-2 rounded-lg font-semibold text-sm transition ${
-              selectedRole === "ADMIN"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 text-gray-400 hover:bg-gray-600"
-            }`}
-          >
-            Admin
-          </button>
+        <div>
+          <label htmlFor="l-email" className="mb-1.5 block text-xs font-medium text-slate-700">Email</label>
+          <input id="l-email" type="email" autoComplete="username"
+            value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="you@company.com" className={field} />
         </div>
 
-        {/* Error */}
-        {error && <p className="text-red-400 text-sm">{error}</p>}
-
-        {/* Email */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Email</label>
-          <input
-            className="bg-gray-700 text-white p-3 rounded-lg text-sm placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="your@company.com"
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
+        <div>
+          <label htmlFor="l-pass" className="mb-1.5 block text-xs font-medium text-slate-700">Password</label>
+          <input id="l-pass" type="password" autoComplete="current-password"
+            value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
+            placeholder="••••••••" className={field} />
         </div>
 
-        {/* Password */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Password</label>
-          <input
-            type="password"
-            className="bg-gray-700 text-white p-3 rounded-lg text-sm placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="••••••••"
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
-        </div>
+        {error && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
 
-        {/* Sign In Button */}
-        <button
-          type="button"
-          onClick={handleLogin}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition"
-        >
-          Sign in
+        <button type="submit" disabled={busy}
+          className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white shadow-sm
+                     transition hover:bg-indigo-700 disabled:opacity-60">
+          {busy ? "Signing in…" : "Sign in"}
         </button>
 
-        {/* Demo hint */}
-        <p className="text-center text-gray-500 text-xs">
-          Select your role then enter your credentials
+        <p className="text-center text-[11px] leading-relaxed text-slate-400">
+          The server sleeps when idle — the first sign-in can take up to a minute.
         </p>
-
-        {/* Register link */}
-        <p className="text-center text-sm text-gray-400">
-          Don't have an account?{" "}
-          <span
-            className="text-blue-400 cursor-pointer hover:underline"
-            onClick={() => navigate("/register")}
-          >
-            Register
-          </span>
-        </p>
-
-      </div>
-    </div>
+      </form>
+    </AuthShell>
   );
 }

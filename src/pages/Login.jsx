@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api, { apiMessage } from "../services/api";
 import { saveUser } from "../services/auth";
 import AuthShell from "../components/AuthShell";
 
@@ -32,15 +32,11 @@ export default function Login() {
         password: form.password,
         role,
       });
-      const { userId, name, role: returnedRole } = res.data;
-      saveUser({ userId, name, role: returnedRole, email: form.email });
+      const { token, userId, name, email, role: returnedRole } = res.data;
+      saveUser({ token, userId, name, role: returnedRole, email });
       navigate(returnedRole === "ADMIN" ? "/admin" : "/employee");
     } catch (err) {
-      setError(
-        err.response?.status === 403
-          ? `That account isn't registered as ${role === "ADMIN" ? "an admin" : "an employee"}.`
-          : "Invalid email or password."
-      );
+      setError(apiMessage(err, "Invalid email or password."));
     } finally {
       setBusy(false);
     }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../services/api";
+import api, { apiMessage } from "../services/api";
 import Shell from "../components/Shell";
 import Card from "../components/Card";
 import { band, pct } from "../theme";
@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     api.get("/admin/employees")
       .then((res) => setEmployees(res.data || []))
-      .catch(() => setError("Couldn't load employees. The server may still be waking up."))
+      .catch((err) => setError(apiMessage(err, "Couldn't load employees. The server may still be waking up.")))
       .finally(() => setLoading(false));
   }, []);
 

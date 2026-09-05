@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api, { apiMessage } from "../services/api";
 import AuthShell from "../components/AuthShell";
 
 const field = "field";
@@ -36,8 +36,7 @@ export default function Register() {
       setNotice("Account created. Taking you to sign in…");
       setTimeout(() => navigate("/"), 900);
     } catch (err) {
-      const data = err.response?.data;
-      setError(typeof data === "string" && data ? data : "Could not register. Try again.");
+      setError(apiMessage(err, "Could not register. Try again."));
     } finally {
       setBusy(false);
     }

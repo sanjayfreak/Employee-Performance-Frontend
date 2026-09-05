@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api, { apiMessage } from "../services/api";
 import { getUser } from "../services/auth";
 import Shell from "../components/Shell";
 import StatusPill from "../components/StatusPill";
@@ -22,7 +22,7 @@ export default function MyTask() {
     if (!user?.userId) return;
     api.get(`/tasks/user/${user.userId}`)
       .then((res) => setTasks(res.data || []))
-      .catch(() => setBanner({ tone: "err", text: "Couldn't load your tasks." }))
+      .catch((err) => setBanner({ tone: "err", text: apiMessage(err, "Couldn't load your tasks.") }))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -31,10 +31,10 @@ export default function MyTask() {
     const before = tasks;
     setTasks((p) => p.map((t) => (t.id === id ? { ...t, status: "IN_PROGRESS" } : t)));
     try {
-      await api.put(`/tasks/${id}`, { status: "IN_PROGRESS" });
-    } catch {
+      await api.post(`/tasks/${id}/start`);
+    } catch (err) {
       setTasks(before);
-      setBanner({ tone: "err", text: "Couldn't start that task." });
+      setBanner({ tone: "err", text: apiMessage(err, "Couldn't start that task.") });
     }
   };
 
@@ -57,8 +57,7 @@ export default function MyTask() {
       setProofFor(null);
       setBanner({ tone: "ok", text: "Proof submitted — waiting for admin review." });
     } catch (err) {
-      const msg = err?.response?.data;
-      setBanner({ tone: "err", text: typeof msg === "string" && msg ? msg : "Couldn't submit that." });
+      setBanner({ tone: "err", text: apiMessage(err, "Couldn't submit that.") });
     } finally {
       setBusy(false);
     }

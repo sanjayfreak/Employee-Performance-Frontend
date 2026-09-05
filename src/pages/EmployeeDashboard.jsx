@@ -67,7 +67,7 @@ export default function EmployeeDashboard() {
   const score = Number(data?.score) || 0;
   const b = band(score);
   const tr = trendOf(data?.trend);
-  const latestWarning = warnings.length ? warnings[warnings.length - 1] : null;
+  const latestWarning = warnings.find((w) => !w.resolved) || null;
 
   return (
     <Shell

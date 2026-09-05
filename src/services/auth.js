@@ -1,12 +1,20 @@
+const KEY = "user";
+
 export const saveUser = (user) => {
-  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem(KEY, JSON.stringify(user));
 };
 
 export const getUser = () => {
-  const user = localStorage.getItem("user");
-  return user ? JSON.parse(user) : null;
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 };
 
+export const getToken = () => getUser()?.token || null;
+
 export const logout = () => {
-  localStorage.removeItem("user");
+  localStorage.removeItem(KEY);
 };

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api, { apiMessage } from "../services/api";
 import Shell from "../components/Shell";
 
 const field = "field";
 
-const EMPTY = { name: "", description: "", assignedTo: "", dueDate: "", status: "PENDING" };
+const EMPTY = { name: "", description: "", assignedTo: "", dueDate: "" };
 
 export default function AssignTask() {
   const [employees, setEmployees] = useState([]);
@@ -15,15 +15,15 @@ export default function AssignTask() {
   useEffect(() => {
     api.get("/admin/employees")
       .then((res) => setEmployees(res.data || []))
-      .catch(() => setBanner({ tone: "err", text: "Couldn't load the employee list." }));
+      .catch((err) => setBanner({ tone: "err", text: apiMessage(err, "Couldn't load the employee list.") }));
   }, []);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const handleAssign = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.assignedTo) {
-      setBanner({ tone: "err", text: "A task name and an assignee are required." });
+    if (!form.name.trim() || !form.assignedTo || !form.dueDate) {
+      setBanner({ tone: "err", text: "Task name, assignee and due date are all required." });
       return;
     }
     setBusy(true);
@@ -33,8 +33,8 @@ export default function AssignTask() {
       const who = employees.find((x) => x.id === form.assignedTo)?.name || "the employee";
       setBanner({ tone: "ok", text: `Task assigned to ${who}.` });
       setForm(EMPTY);
-    } catch {
-      setBanner({ tone: "err", text: "Couldn't assign that task." });
+    } catch (err) {
+      setBanner({ tone: "err", text: apiMessage(err, "Couldn't assign that task.") });
     } finally {
       setBusy(false);
     }

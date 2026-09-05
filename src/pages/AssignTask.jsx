@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import Shell from "../components/Shell";
 
-const field =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 " +
-  "placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20";
+const field = "field";
 
 const EMPTY = { name: "", description: "", assignedTo: "", dueDate: "", status: "PENDING" };
 
@@ -48,8 +46,8 @@ export default function AssignTask() {
         <div role="alert"
           className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${
             banner.tone === "ok"
-              ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
-              : "border border-amber-200 bg-amber-50 text-amber-900"
+              ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-200"
+              : "border border-amber-500/25 bg-amber-500/10 text-amber-200"
           }`}>
           <span className="flex-1">{banner.text}</span>
           <button onClick={() => setBanner(null)} aria-label="Dismiss" className="opacity-70 hover:opacity-100">✕</button>
@@ -57,16 +55,16 @@ export default function AssignTask() {
       )}
 
       <form onSubmit={handleAssign}
-        className="max-w-2xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        className="max-w-2xl space-y-5 card p-6">
         <div>
-          <label htmlFor="a-name" className="mb-1.5 block text-xs font-medium text-slate-700">Task name</label>
+          <label htmlFor="a-name" className="mb-1.5 block text-xs font-medium text-slate-300">Task name</label>
           <input id="a-name" value={form.name} onChange={set("name")}
             placeholder="e.g. Build the reporting endpoint" className={field} />
         </div>
 
         <div>
-          <label htmlFor="a-desc" className="mb-1.5 block text-xs font-medium text-slate-700">
-            Description <span className="font-normal text-slate-400">(optional)</span>
+          <label htmlFor="a-desc" className="mb-1.5 block text-xs font-medium text-slate-300">
+            Description <span className="font-normal text-slate-500">(optional)</span>
           </label>
           <textarea id="a-desc" rows={3} value={form.description} onChange={set("description")}
             placeholder="What does done look like?" className={`${field} resize-none`} />
@@ -74,7 +72,7 @@ export default function AssignTask() {
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="a-who" className="mb-1.5 block text-xs font-medium text-slate-700">Assign to</label>
+            <label htmlFor="a-who" className="mb-1.5 block text-xs font-medium text-slate-300">Assign to</label>
             <select id="a-who" value={form.assignedTo} onChange={set("assignedTo")} className={field}>
               <option value="">Select an employee</option>
               {employees.map((emp) => (
@@ -82,26 +80,26 @@ export default function AssignTask() {
               ))}
             </select>
             {employees.length === 0 && (
-              <p className="mt-1.5 text-xs text-slate-500">No employees registered yet.</p>
+              <p className="mt-1.5 text-xs text-slate-400">No employees registered yet.</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="a-due" className="mb-1.5 block text-xs font-medium text-slate-700">Due date</label>
+            <label htmlFor="a-due" className="mb-1.5 block text-xs font-medium text-slate-300">Due date</label>
             <input id="a-due" type="date" value={form.dueDate} onChange={set("dueDate")} className={field} />
-            <p className="mt-1.5 text-xs text-slate-500">
+            <p className="mt-1.5 text-xs text-slate-400">
               Used for the on-time rate, worth 30% of their score.
             </p>
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-slate-100 pt-5">
+        <div className="flex justify-end gap-2 border-t border-white/[0.07] pt-5">
           <button type="button" onClick={() => setForm(EMPTY)}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+            className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 transition hover:bg-white/10">
             Clear
           </button>
           <button type="submit" disabled={busy}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-60">
+            className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400 disabled:opacity-60">
             {busy ? "Assigning…" : "Assign task"}
           </button>
         </div>

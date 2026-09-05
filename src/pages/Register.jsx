@@ -3,9 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import AuthShell from "../components/AuthShell";
 
-const field =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 " +
-  "placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20";
+const field = "field";
 
 const ROLES = [
   { key: "EMPLOYEE", label: "Employee" },
@@ -52,22 +50,22 @@ export default function Register() {
       footer={
         <>
           Already have an account?{" "}
-          <Link to="/" className="font-medium text-indigo-600 hover:text-indigo-700">Sign in</Link>
+          <Link to="/" className="font-medium text-violet-300 hover:text-violet-200">Sign in</Link>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <span className="mb-1.5 block text-xs font-medium text-slate-700">Register as</span>
-          <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1" role="group">
+          <span className="mb-1.5 block text-xs font-medium text-slate-300">Register as</span>
+          <div className="grid grid-cols-2 gap-1 rounded-xl bg-white/[0.05] p-1 ring-1 ring-inset ring-white/10" role="group">
             {ROLES.map((r) => (
               <button key={r.key} type="button"
                 onClick={() => setForm({ ...form, role: r.key })}
                 aria-pressed={form.role === r.key}
                 className={`rounded-md py-2 text-sm font-medium transition ${
                   form.role === r.key
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-500 hover:text-slate-900"
+                    ? "bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-[0_8px_20px_-10px_rgba(124,92,255,.9)]"
+                    : "text-slate-400 hover:text-white"
                 }`}>
                 {r.label}
               </button>
@@ -76,28 +74,28 @@ export default function Register() {
         </div>
 
         <div>
-          <label htmlFor="r-name" className="mb-1.5 block text-xs font-medium text-slate-700">Full name</label>
+          <label htmlFor="r-name" className="mb-1.5 block text-xs font-medium text-slate-300">Full name</label>
           <input id="r-name" value={form.name} onChange={set("name")} placeholder="Sanjay Kumar" className={field} />
         </div>
 
         <div>
-          <label htmlFor="r-email" className="mb-1.5 block text-xs font-medium text-slate-700">Email</label>
+          <label htmlFor="r-email" className="mb-1.5 block text-xs font-medium text-slate-300">Email</label>
           <input id="r-email" type="email" autoComplete="username" value={form.email}
             onChange={set("email")} placeholder="you@company.com" className={field} />
         </div>
 
         <div>
-          <label htmlFor="r-pass" className="mb-1.5 block text-xs font-medium text-slate-700">Password</label>
+          <label htmlFor="r-pass" className="mb-1.5 block text-xs font-medium text-slate-300">Password</label>
           <input id="r-pass" type="password" autoComplete="new-password" value={form.password}
             onChange={set("password")} placeholder="at least 6 characters" className={field} />
         </div>
 
-        {error && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
-        {notice && <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-800">{notice}</p>}
+        {error && <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2 text-xs text-red-300">{error}</p>}
+        {notice && <p role="status" className="rounded-xl bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">{notice}</p>}
 
         <button type="submit" disabled={busy}
-          className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white shadow-sm
-                     transition hover:bg-indigo-700 disabled:opacity-60">
+          className="w-full rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 py-2.5 text-sm font-medium text-white shadow-sm
+                     shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400 disabled:opacity-60">
           {busy ? "Creating…" : "Create account"}
         </button>
       </form>

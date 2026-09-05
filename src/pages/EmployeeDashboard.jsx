@@ -17,10 +17,10 @@ const Icon = ({ d }) => (
 );
 
 const WARNING_TONE = {
-  1: { soft: "#fdf3dc", ink: "#7a5300", label: "Level 1" },
-  2: { soft: "#fdeae2", ink: "#8f3f1c", label: "Level 2" },
-  3: { soft: "#fbe6e6", ink: "#a12525", label: "Level 3" },
-  4: { soft: "#fbe6e6", ink: "#a12525", label: "Level 4" },
+  1: { soft: "rgba(245,179,60,.15)", ink: "#F8CC7A", label: "Level 1" },
+  2: { soft: "rgba(251,146,60,.15)", ink: "#FDBE8A", label: "Level 2" },
+  3: { soft: "rgba(248,113,113,.15)", ink: "#FCA5A5", label: "Level 3" },
+  4: { soft: "rgba(248,113,113,.15)", ink: "#FCA5A5", label: "Level 4" },
 };
 
 export default function EmployeeDashboard() {
@@ -77,22 +77,22 @@ export default function EmployeeDashboard() {
       actions={
         <Link
           to="/tasks"
-          className="ml-auto rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700"
+          className="ml-auto rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-3.5 py-2 text-sm font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400"
         >
           My tasks
         </Link>
       }
     >
       {error && (
-        <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div role="alert" className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
           {error}
         </div>
       )}
 
       {!data && !error ? (
         <div className="grid gap-5">
-          <div className="h-32 animate-pulse rounded-2xl bg-white" />
-          <div className="h-64 animate-pulse rounded-2xl bg-white" />
+          <div className="h-32 animate-pulse rounded-2xl bg-white/[0.04]" />
+          <div className="h-64 animate-pulse rounded-2xl bg-white/[0.04]" />
         </div>
       ) : (
         <>
@@ -132,35 +132,35 @@ export default function EmployeeDashboard() {
               title="Open tasks"
               value={open}
               hint={`${tasks.length} assigned in total`}
-              accent={{ soft: "#e4eefb", ink: "#1b4d8a" }}
+              accent={{ soft: "rgba(76,154,255,.16)", ink: "#96C4FF" }}
               icon={<Icon d="M4 5h12M4 10h12M4 15h8" />}
             />
             <Card
               title="Approved"
               value={counts.COMPLETED || 0}
               hint={counts.SUBMITTED ? `${counts.SUBMITTED} awaiting review` : undefined}
-              accent={{ soft: "#e0f0e0", ink: "#005400" }}
+              accent={{ soft: "rgba(52,211,153,.15)", ink: "#7BE7BE" }}
               icon={<Icon d="M4 10.5l3.5 3.5L16 6" />}
             />
           </div>
 
           <div className="grid gap-5 lg:grid-cols-3">
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">Score breakdown</h2>
-              <p className="mt-0.5 text-xs text-slate-500">How your overall number is made up</p>
+            <section className="card p-6">
+              <h2 className="text-sm font-semibold text-white">Score breakdown</h2>
+              <p className="mt-0.5 text-xs text-slate-400">How your overall number is made up</p>
 
               <div className="mt-5 flex justify-center">
                 <ScoreRing score={score} />
               </div>
 
-              <div className="mt-6 border-t border-slate-100 pt-5">
+              <div className="mt-6 border-t border-white/[0.07] pt-5">
                 <MetricBars log={latest} />
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-              <h2 className="text-sm font-semibold text-slate-900">Score over time</h2>
-              <p className="mt-0.5 text-xs text-slate-500">
+            <section className="card p-6 lg:col-span-2">
+              <h2 className="text-sm font-semibold text-white">Score over time</h2>
+              <p className="mt-0.5 text-xs text-slate-400">
                 Recorded each time your dashboard is calculated
               </p>
               <div className="mt-4">
@@ -169,58 +169,58 @@ export default function EmployeeDashboard() {
             </section>
           </div>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="card p-6">
             <div className="flex items-center gap-2">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-indigo-50 text-indigo-700">
+              <span className="grid h-7 w-7 place-items-center rounded-xl bg-violet-500/10 text-violet-300">
                 <Icon d="M10 3.5l1.6 3.6 3.9.4-2.9 2.6.8 3.9L10 12l-3.4 2 .8-3.9L4.5 7.5l3.9-.4L10 3.5z" />
               </span>
-              <h2 className="text-sm font-semibold text-slate-900">AI analysis</h2>
+              <h2 className="text-sm font-semibold text-white">AI analysis</h2>
             </div>
 
             {data?.aiInsight?.insight ? (
               <>
-                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
+                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-300">
                   {data.aiInsight.insight}
                 </p>
                 {data.aiInsight.course && (
-                  <div className="mt-4 flex items-start gap-2.5 rounded-xl bg-indigo-50 px-4 py-3">
-                    <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-indigo-700"
+                  <div className="mt-4 flex items-start gap-2.5 rounded-xl bg-violet-500/10 px-4 py-3">
+                    <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-violet-300"
                       fill="none" stroke="currentColor" strokeWidth="1.8">
                       <path d="M3 5.5h6a2 2 0 012 2V16a2 2 0 00-2-2H3V5.5zM17 5.5h-6a2 2 0 00-2 2V16a2 2 0 012-2h6V5.5z"
                         strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     <div>
-                      <p className="text-xs font-medium text-indigo-900">Suggested next step</p>
-                      <p className="text-sm text-indigo-800">{data.aiInsight.course}</p>
+                      <p className="text-xs font-medium text-violet-200">Suggested next step</p>
+                      <p className="text-sm text-violet-200">{data.aiInsight.course}</p>
                     </div>
                   </div>
                 )}
               </>
             ) : (
-              <p className="mt-3 text-sm text-slate-500">
+              <p className="mt-3 text-sm text-slate-400">
                 No analysis yet — complete a few tasks and it will appear here.
               </p>
             )}
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">Assigned tasks</h2>
-              <Link to="/tasks" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
+          <section className="card">
+            <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
+              <h2 className="text-sm font-semibold text-white">Assigned tasks</h2>
+              <Link to="/tasks" className="text-xs font-medium text-violet-300 hover:text-violet-200">
                 View all →
               </Link>
             </div>
 
             {tasks.length === 0 ? (
-              <p className="px-5 py-10 text-center text-sm text-slate-500">Nothing assigned yet.</p>
+              <p className="px-5 py-10 text-center text-sm text-slate-400">Nothing assigned yet.</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-white/[0.06]">
                 {tasks.slice(0, 5).map((t) => (
                   <li key={t.id} className="flex items-center gap-3 px-5 py-3.5">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-900">{t.name}</p>
+                      <p className="truncate text-sm font-medium text-white">{t.name}</p>
                       {t.dueDate && (
-                        <p className="mt-0.5 text-xs text-slate-500">Due {formatDate(t.dueDate)}</p>
+                        <p className="mt-0.5 text-xs text-slate-400">Due {formatDate(t.dueDate)}</p>
                       )}
                     </div>
                     <StatusPill status={t.status} />

@@ -61,8 +61,8 @@ export default function TaskReview() {
         <div role="alert"
           className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${
             banner.tone === "ok"
-              ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
-              : "border border-amber-200 bg-amber-50 text-amber-900"
+              ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-200"
+              : "border border-amber-500/25 bg-amber-500/10 text-amber-200"
           }`}>
           <span className="flex-1">{banner.text}</span>
           <button onClick={() => setBanner(null)} aria-label="Dismiss" className="opacity-70 hover:opacity-100">✕</button>
@@ -71,45 +71,45 @@ export default function TaskReview() {
 
       {loading ? (
         <div className="space-y-4">
-          {[0, 1].map((i) => <div key={i} className="h-48 animate-pulse rounded-2xl bg-white" />)}
+          {[0, 1].map((i) => <div key={i} className="h-48 animate-pulse rounded-2xl bg-white/[0.04]" />)}
         </div>
       ) : tasks.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-          <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-emerald-50 text-emerald-700">
+        <div className="card px-6 py-16 text-center">
+          <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-emerald-500/10 text-emerald-300">
             <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M4 10.5l3.5 3.5L16 6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <p className="mt-3 text-sm font-medium text-slate-900">Nothing to review</p>
-          <p className="mt-1 text-xs text-slate-500">Every submitted task has been handled.</p>
+          <p className="mt-3 text-sm font-medium text-white">Nothing to review</p>
+          <p className="mt-1 text-xs text-slate-400">Every submitted task has been handled.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {tasks.map((task) => (
-            <article key={task.id} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <article key={task.id} className="card p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h2 className="text-sm font-semibold text-slate-900">{task.name}</h2>
+                  <h2 className="text-sm font-semibold text-white">{task.name}</h2>
                   {task.description && (
-                    <p className="mt-0.5 text-xs text-slate-500">{task.description}</p>
+                    <p className="mt-0.5 text-xs text-slate-400">{task.description}</p>
                   )}
                 </div>
-                <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-800">
+                <span className="rounded-full bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-200">
                   Awaiting review
                 </span>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
                 {task.dueDate && <span>Due {formatDate(task.dueDate)}</span>}
                 <span className="font-mono">Employee {task.assignedTo}</span>
               </div>
 
-              <div className="mt-4 rounded-xl bg-slate-50 p-4">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Proof of work</p>
+              <div className="mt-4 rounded-xl bg-white/[0.04] p-4">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Proof of work</p>
 
                 {task.proofLink && (
                   <a href={task.proofLink} target="_blank" rel="noopener noreferrer"
-                    className="mt-2 inline-flex max-w-full items-center gap-1.5 text-sm text-indigo-600 hover:text-indigo-700">
+                    className="mt-2 inline-flex max-w-full items-center gap-1.5 text-sm text-violet-300 hover:text-violet-200">
                     <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8">
                       <path d="M8.5 11.5a3 3 0 004.2 0l2.6-2.6a3 3 0 10-4.2-4.2l-.9.9M11.5 8.5a3 3 0 00-4.2 0l-2.6 2.6a3 3 0 104.2 4.2l.9-.9"
                         strokeLinecap="round" strokeLinejoin="round" />
@@ -119,7 +119,7 @@ export default function TaskReview() {
                 )}
 
                 {task.proofDescription && (
-                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
+                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-300">
                     {task.proofDescription}
                   </p>
                 )}
@@ -127,37 +127,37 @@ export default function TaskReview() {
 
               <div className="mt-5 flex gap-2">
                 <button onClick={() => approve(task.id)} disabled={busy}
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-700 disabled:opacity-60">
+                  className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 shadow-[0_10px_26px_-12px_rgba(16,185,129,.9)] transition hover:bg-emerald-400 disabled:opacity-60">
                   Approve
                 </button>
                 <button
                   onClick={() => { setRejectFor(rejectFor === task.id ? null : task.id); setComment(""); setBanner(null); }}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                  className="rounded-xl border border-white/15 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/[0.05]">
                   Send back
                 </button>
               </div>
 
               {rejectFor === task.id && (
-                <form onSubmit={reject} className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">
-                  <label htmlFor={`c-${task.id}`} className="block text-xs font-medium text-red-900">
+                <form onSubmit={reject} className="mt-4 rounded-xl border border-red-500/25 bg-red-500/10 p-4">
+                  <label htmlFor={`c-${task.id}`} className="block text-xs font-medium text-red-200">
                     What needs fixing?
                   </label>
-                  <p className="mt-0.5 text-[11px] text-red-700">
+                  <p className="mt-0.5 text-[11px] text-red-300">
                     The employee sees this, and the task returns to in progress.
                   </p>
                   <textarea id={`c-${task.id}`} rows={3} value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Be specific — it's the only feedback they get."
-                    className="mt-2 w-full resize-none rounded-lg border border-red-200 bg-white px-3 py-2 text-sm
-                               text-slate-900 placeholder:text-slate-400 focus:border-red-400 focus:outline-none
+                    className="mt-2 w-full resize-none rounded-xl border border-red-500/25 bg-[#0E1524] px-3 py-2 text-sm
+                               text-white placeholder:text-slate-500 focus:border-red-400/60 focus:outline-none
                                focus:ring-2 focus:ring-red-500/20" />
                   <div className="mt-3 flex justify-end gap-2">
                     <button type="button" onClick={() => { setRejectFor(null); setComment(""); }}
-                      className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-white">
+                      className="rounded-xl px-3 py-1.5 text-sm font-medium text-slate-400 transition hover:bg-white/10">
                       Cancel
                     </button>
                     <button type="submit" disabled={busy}
-                      className="rounded-lg bg-red-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-60">
+                      className="rounded-xl bg-red-500 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-red-400 disabled:opacity-60">
                       {busy ? "Sending…" : "Send back"}
                     </button>
                   </div>

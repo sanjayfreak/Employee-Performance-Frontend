@@ -6,32 +6,25 @@ const ROWS = [
   { key: "qualityScore",   label: "Quality",    weight: "30%", color: SERIES.quality },
 ];
 
-/**
- * The three inputs the overall score is computed from, with the weight
- * each one carries — so the headline number is explainable.
- */
+/** The three inputs the score is computed from, with their weights. */
 export default function MetricBars({ log }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {ROWS.map((r) => {
         const v = Math.max(0, Math.min(100, Number(log?.[r.key]) || 0));
         return (
           <div key={r.key}>
-            <div className="mb-2 flex items-baseline justify-between text-sm">
-              <span className="text-slate-400">
+            <div className="mb-1.5 flex items-baseline justify-between">
+              <span className="text-[12px] text-[#9aa1ab]">
                 {r.label}
-                <span className="ml-1.5 text-[11px] text-slate-600">weight {r.weight}</span>
+                <span className="ml-1.5 text-[11px] text-[#4b515a]">{r.weight}</span>
               </span>
-              <span className="font-semibold tabular-nums text-white">{pct(v)}</span>
+              <span className="font-mono text-[12px] text-[#f5f6f7]">{pct(v)}</span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
+            <div className="h-[3px] w-full overflow-hidden rounded-full bg-[#17191d]">
               <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${v}%`,
-                  background: `linear-gradient(90deg, ${r.color}99, ${r.color})`,
-                  boxShadow: `0 0 12px ${r.color}55`,
-                }}
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${v}%`, background: r.color }}
               />
             </div>
           </div>

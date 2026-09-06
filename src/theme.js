@@ -1,44 +1,46 @@
-// Presentation layer for PerfTrack AI — dark theme.
-// Status and series colours are picked for contrast on a #060912 ground
-// and kept distinguishable under common colour-vision deficiencies.
+// Presentation layer for PerfTrack — "Midnight Precision".
+//
+// Colour is a signal here, not decoration: the interface is monochrome
+// and hue only ever means status. Every value is tuned for the #08090b
+// ground and kept distinguishable under common colour-vision deficiencies.
 
 export const STATUS = {
-  PENDING:     { label: "Not started",    color: "#F5B33C", soft: "rgba(245,179,60,.14)",  ink: "#F8CC7A" },
-  IN_PROGRESS: { label: "In progress",    color: "#4C9AFF", soft: "rgba(76,154,255,.16)",  ink: "#96C4FF" },
-  SUBMITTED:   { label: "Awaiting review",color: "#A78BFA", soft: "rgba(167,139,250,.18)", ink: "#CBBAFD" },
-  COMPLETED:   { label: "Approved",       color: "#34D399", soft: "rgba(52,211,153,.15)",  ink: "#7BE7BE" },
+  PENDING:     { label: "Not started",     color: "#8b929c", soft: "rgba(139,146,156,.10)", ink: "#9aa1ab" },
+  IN_PROGRESS: { label: "In progress",     color: "#7aa2f7", soft: "rgba(122,162,247,.10)", ink: "#96b7ff" },
+  SUBMITTED:   { label: "Awaiting review", color: "#c8a45c", soft: "rgba(200,164,92,.10)",  ink: "#d9bb80" },
+  COMPLETED:   { label: "Approved",        color: "#4ade80", soft: "rgba(74,222,128,.10)",  ink: "#6ee7a0" },
 };
 
 export const STATUS_ORDER = ["PENDING", "IN_PROGRESS", "SUBMITTED", "COMPLETED"];
 
 export const statusOf = (s) => STATUS[s] || STATUS.PENDING;
 
-/** Chart series — tuned for a dark ground. */
+/** Chart and meter colours. The headline series is plain white on purpose. */
 export const SERIES = {
-  score:      "#A78BFA",
-  completion: "#4C9AFF",
-  onTime:     "#FB923C",
-  quality:    "#34D399",
+  score:      "#e8eaed",
+  completion: "#e8eaed",
+  onTime:     "#8b929c",
+  quality:    "#8b929c",
 };
 
 /**
- * Performance bands. The same thresholds the backend uses for warnings,
+ * Performance bands. Same thresholds the backend uses for warnings,
  * so the UI never disagrees with the score it is showing.
  */
 export function band(score) {
-  if (score >= 80) return { label: "Good",     color: "#34D399", soft: "rgba(52,211,153,.15)",  ink: "#7BE7BE" };
-  if (score >= 70) return { label: "Average",  color: "#F5B33C", soft: "rgba(245,179,60,.15)",  ink: "#F8CC7A" };
-  if (score >= 50) return { label: "Low",      color: "#FB923C", soft: "rgba(251,146,60,.15)",  ink: "#FDBE8A" };
-  return              { label: "Critical", color: "#F87171", soft: "rgba(248,113,113,.15)", ink: "#FCA5A5" };
+  if (score >= 80) return { label: "Good",     color: "#4ade80", soft: "rgba(74,222,128,.10)",  ink: "#6ee7a0" };
+  if (score >= 70) return { label: "Average",  color: "#c8a45c", soft: "rgba(200,164,92,.10)",  ink: "#d9bb80" };
+  if (score >= 50) return { label: "Low",      color: "#f0a35e", soft: "rgba(240,163,94,.10)",  ink: "#f5bb85" };
+  return              { label: "Critical", color: "#f0656f", soft: "rgba(240,101,111,.10)", ink: "#f68d95" };
 }
 
 export const TREND = {
-  Improving: { label: "Improving", ink: "#7BE7BE", soft: "rgba(52,211,153,.15)",  arrow: "M10 15V5M6 9l4-4 4 4" },
-  Declining: { label: "Declining", ink: "#FCA5A5", soft: "rgba(248,113,113,.15)", arrow: "M10 5v10M6 11l4 4 4-4" },
-  Stable:    { label: "Stable",    ink: "#A9B4C7", soft: "rgba(148,163,184,.14)", arrow: "M5 10h10" },
+  Improving: { label: "Improving", ink: "#6ee7a0", soft: "rgba(74,222,128,.10)",  arrow: "M10 15V5M6 9l4-4 4 4" },
+  Declining: { label: "Declining", ink: "#f68d95", soft: "rgba(240,101,111,.10)", arrow: "M10 5v10M6 11l4 4 4-4" },
+  Stable:    { label: "Stable",    ink: "#9aa1ab", soft: "rgba(139,146,156,.10)", arrow: "M5 10h10" },
 };
 export const trendOf = (t) =>
-  TREND[t] || { label: t || "No data", ink: "#A9B4C7", soft: "rgba(148,163,184,.14)", arrow: "M5 10h10" };
+  TREND[t] || { label: t || "No data", ink: "#9aa1ab", soft: "rgba(139,146,156,.10)", arrow: "M5 10h10" };
 
 export const pct = (n) => `${Math.round(Number(n) || 0)}%`;
 

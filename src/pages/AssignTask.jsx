@@ -44,7 +44,7 @@ export default function AssignTask() {
     <Shell role="ADMIN" title="Assign a task" subtitle="Give an employee something to work on">
       {banner && (
         <div role="alert"
-          className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${
+          className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${
             banner.tone === "ok"
               ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-200"
               : "border border-amber-500/25 bg-amber-500/10 text-amber-200"
@@ -57,14 +57,14 @@ export default function AssignTask() {
       <form onSubmit={handleAssign}
         className="max-w-2xl space-y-5 card p-6">
         <div>
-          <label htmlFor="a-name" className="mb-1.5 block text-xs font-medium text-slate-300">Task name</label>
+          <label htmlFor="a-name" className="mb-1.5 block text-xs font-medium text-[#9aa1ab]">Task name</label>
           <input id="a-name" value={form.name} onChange={set("name")}
             placeholder="e.g. Build the reporting endpoint" className={field} />
         </div>
 
         <div>
-          <label htmlFor="a-desc" className="mb-1.5 block text-xs font-medium text-slate-300">
-            Description <span className="font-normal text-slate-500">(optional)</span>
+          <label htmlFor="a-desc" className="mb-1.5 block text-xs font-medium text-[#9aa1ab]">
+            Description <span className="font-normal text-[#5a616b]">(optional)</span>
           </label>
           <textarea id="a-desc" rows={3} value={form.description} onChange={set("description")}
             placeholder="What does done look like?" className={`${field} resize-none`} />
@@ -72,7 +72,7 @@ export default function AssignTask() {
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="a-who" className="mb-1.5 block text-xs font-medium text-slate-300">Assign to</label>
+            <label htmlFor="a-who" className="mb-1.5 block text-xs font-medium text-[#9aa1ab]">Assign to</label>
             <select id="a-who" value={form.assignedTo} onChange={set("assignedTo")} className={field}>
               <option value="">Select an employee</option>
               {employees.map((emp) => (
@@ -80,26 +80,26 @@ export default function AssignTask() {
               ))}
             </select>
             {employees.length === 0 && (
-              <p className="mt-1.5 text-xs text-slate-400">No employees registered yet.</p>
+              <p className="mt-1.5 text-xs text-[#7d848f]">No employees registered yet.</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="a-due" className="mb-1.5 block text-xs font-medium text-slate-300">Due date</label>
+            <label htmlFor="a-due" className="mb-1.5 block text-xs font-medium text-[#9aa1ab]">Due date</label>
             <input id="a-due" type="date" value={form.dueDate} onChange={set("dueDate")} className={field} />
-            <p className="mt-1.5 text-xs text-slate-400">
+            <p className="mt-1.5 text-xs text-[#7d848f]">
               Used for the on-time rate, worth 30% of their score.
             </p>
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-white/[0.07] pt-5">
+        <div className="flex justify-end gap-2 border-t border-[#17191d] pt-5">
           <button type="button" onClick={() => setForm(EMPTY)}
-            className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 transition hover:bg-white/10">
+            className="rounded-lg px-4 py-2 text-sm font-medium text-[#7d848f] transition hover:bg-[#131519]">
             Clear
           </button>
           <button type="submit" disabled={busy}
-            className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400 disabled:opacity-60">
+            className="btn-primary">
             {busy ? "Assigning…" : "Assign task"}
           </button>
         </div>

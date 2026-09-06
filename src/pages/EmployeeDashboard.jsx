@@ -77,28 +77,28 @@ export default function EmployeeDashboard() {
       actions={
         <Link
           to="/tasks"
-          className="ml-auto rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-3.5 py-2 text-sm font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400"
+          className="btn-primary ml-auto"
         >
           My tasks
         </Link>
       }
     >
       {error && (
-        <div role="alert" className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        <div role="alert" className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
           {error}
         </div>
       )}
 
       {!data && !error ? (
         <div className="grid gap-5">
-          <div className="h-32 animate-pulse rounded-2xl bg-white/[0.04]" />
-          <div className="h-64 animate-pulse rounded-2xl bg-white/[0.04]" />
+          <div className="h-32 animate-pulse rounded-[10px] bg-[#0e1013]" />
+          <div className="h-64 animate-pulse rounded-[10px] bg-[#0e1013]" />
         </div>
       ) : (
         <>
           {latestWarning && (
             <div
-              className="flex items-start gap-3 rounded-xl px-4 py-3 text-sm"
+              className="flex items-start gap-3 rounded-lg px-4 py-3 text-sm"
               style={{ background: (WARNING_TONE[latestWarning.level] || WARNING_TONE[1]).soft,
                        color: (WARNING_TONE[latestWarning.level] || WARNING_TONE[1]).ink }}
             >
@@ -125,6 +125,7 @@ export default function EmployeeDashboard() {
             <Card
               title="Trend"
               value={tr.label}
+              numeric={false}
               accent={{ soft: tr.soft, ink: tr.ink }}
               icon={<Icon d={tr.arrow} />}
             />
@@ -146,22 +147,22 @@ export default function EmployeeDashboard() {
 
           <div className="grid gap-5 lg:grid-cols-3">
             <section className="card p-6">
-              <h2 className="text-sm font-semibold text-white">Score breakdown</h2>
-              <p className="mt-0.5 text-xs text-slate-400">How your overall number is made up</p>
+              <h2 className="text-sm font-semibold text-[#f5f6f7]">Score breakdown</h2>
+              <p className="mt-0.5 text-xs text-[#7d848f]">How your overall number is made up</p>
 
               <div className="mt-5 flex justify-center">
                 <ScoreRing score={score} />
               </div>
 
-              <div className="mt-6 border-t border-white/[0.07] pt-5">
+              <div className="mt-6 border-t border-[#17191d] pt-5">
                 <MetricBars log={latest} />
               </div>
             </section>
 
             <section className="card p-6 lg:col-span-2">
-              <h2 className="text-sm font-semibold text-white">Score over time</h2>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Recorded each time your dashboard is calculated
+              <h2 className="text-sm font-semibold text-[#f5f6f7]">Score over time</h2>
+              <p className="mt-0.5 text-xs text-[#7d848f]">
+                A point is recorded when a task is assigned, approved or sent back
               </p>
               <div className="mt-4">
                 <PerformanceChart history={history} />
@@ -171,56 +172,56 @@ export default function EmployeeDashboard() {
 
           <section className="card p-6">
             <div className="flex items-center gap-2">
-              <span className="grid h-7 w-7 place-items-center rounded-xl bg-violet-500/10 text-violet-300">
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#131519] text-[#c3c8cf]">
                 <Icon d="M10 3.5l1.6 3.6 3.9.4-2.9 2.6.8 3.9L10 12l-3.4 2 .8-3.9L4.5 7.5l3.9-.4L10 3.5z" />
               </span>
-              <h2 className="text-sm font-semibold text-white">AI analysis</h2>
+              <h2 className="text-sm font-semibold text-[#f5f6f7]">AI analysis</h2>
             </div>
 
             {data?.aiInsight?.insight ? (
               <>
-                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-300">
+                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-[#9aa1ab]">
                   {data.aiInsight.insight}
                 </p>
                 {data.aiInsight.course && (
-                  <div className="mt-4 flex items-start gap-2.5 rounded-xl bg-violet-500/10 px-4 py-3">
-                    <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-violet-300"
+                  <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-[#131519] px-4 py-3">
+                    <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-[#c3c8cf]"
                       fill="none" stroke="currentColor" strokeWidth="1.8">
                       <path d="M3 5.5h6a2 2 0 012 2V16a2 2 0 00-2-2H3V5.5zM17 5.5h-6a2 2 0 00-2 2V16a2 2 0 012-2h6V5.5z"
                         strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     <div>
-                      <p className="text-xs font-medium text-violet-200">Suggested next step</p>
-                      <p className="text-sm text-violet-200">{data.aiInsight.course}</p>
+                      <p className="text-xs font-medium text-[#c3c8cf]">Suggested next step</p>
+                      <p className="text-sm text-[#c3c8cf]">{data.aiInsight.course}</p>
                     </div>
                   </div>
                 )}
               </>
             ) : (
-              <p className="mt-3 text-sm text-slate-400">
+              <p className="mt-3 text-sm text-[#7d848f]">
                 No analysis yet — complete a few tasks and it will appear here.
               </p>
             )}
           </section>
 
           <section className="card">
-            <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
-              <h2 className="text-sm font-semibold text-white">Assigned tasks</h2>
-              <Link to="/tasks" className="text-xs font-medium text-violet-300 hover:text-violet-200">
+            <div className="flex items-center justify-between border-b border-[#17191d] px-5 py-4">
+              <h2 className="text-sm font-semibold text-[#f5f6f7]">Assigned tasks</h2>
+              <Link to="/tasks" className="text-xs font-medium text-[#c3c8cf] hover:text-[#f5f6f7]">
                 View all →
               </Link>
             </div>
 
             {tasks.length === 0 ? (
-              <p className="px-5 py-10 text-center text-sm text-slate-400">Nothing assigned yet.</p>
+              <p className="px-5 py-10 text-center text-sm text-[#7d848f]">Nothing assigned yet.</p>
             ) : (
-              <ul className="divide-y divide-white/[0.06]">
+              <ul className="divide-y divide-[#141619]">
                 {tasks.slice(0, 5).map((t) => (
                   <li key={t.id} className="flex items-center gap-3 px-5 py-3.5">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-white">{t.name}</p>
+                      <p className="truncate text-sm font-medium text-[#f5f6f7]">{t.name}</p>
                       {t.dueDate && (
-                        <p className="mt-0.5 text-xs text-slate-400">Due {formatDate(t.dueDate)}</p>
+                        <p className="mt-0.5 text-xs text-[#7d848f]">Due {formatDate(t.dueDate)}</p>
                       )}
                     </div>
                     <StatusPill status={t.status} />

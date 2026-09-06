@@ -79,7 +79,7 @@ export default function MyTask() {
       {banner && (
         <div
           role="alert"
-          className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${
+          className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${
             banner.tone === "ok"
               ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-200"
               : "border border-amber-500/25 bg-amber-500/10 text-amber-200"
@@ -91,14 +91,14 @@ export default function MyTask() {
       )}
 
       <section className="card">
-        <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-5 py-4">
-          <div className="flex flex-wrap gap-1 rounded-xl bg-white/[0.05] p-1 ring-1 ring-inset ring-white/10">
+        <div className="flex flex-wrap items-center gap-2 border-b border-[#17191d] px-5 py-4">
+          <div className="flex flex-wrap gap-1 rounded-lg bg-[#0e1013] p-1 ring-1 ring-inset ring-[#1d2025]">
             {tabs.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setFilter(t.key)}
                 className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-                  filter === t.key ? "bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-[0_8px_20px_-10px_rgba(124,92,255,.9)]" : "text-slate-400 hover:text-white"
+                  filter === t.key ? "border-[#2a2e35] bg-[#131519] font-medium text-[#f5f6f7]" : "text-[#7d848f] hover:text-[#f5f6f7]"
                 }`}
               >
                 {t.label}
@@ -110,35 +110,35 @@ export default function MyTask() {
 
         {loading ? (
           <div className="space-y-3 p-5">
-            {[0, 1, 2].map((i) => <div key={i} className="h-16 animate-pulse rounded-xl bg-white/[0.06]" />)}
+            {[0, 1, 2].map((i) => <div key={i} className="h-16 animate-pulse rounded-lg bg-[#131519]" />)}
           </div>
         ) : visible.length === 0 ? (
-          <p className="px-5 py-16 text-center text-sm text-slate-400">
+          <p className="px-5 py-16 text-center text-sm text-[#7d848f]">
             {tasks.length === 0 ? "No tasks assigned yet." : "Nothing in this view."}
           </p>
         ) : (
-          <ul className="divide-y divide-white/[0.06]">
+          <ul className="divide-y divide-[#141619]">
             {visible.map((task) => {
               const late = isOverdue(task.dueDate, task.status);
               return (
                 <li key={task.id} className="px-5 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-white">{task.name}</p>
+                      <p className="text-sm font-medium text-[#f5f6f7]">{task.name}</p>
                       {task.description && (
-                        <p className="mt-0.5 text-xs text-slate-400">{task.description}</p>
+                        <p className="mt-0.5 text-xs text-[#7d848f]">{task.description}</p>
                       )}
                       <div className="mt-2 flex flex-wrap items-center gap-2">
                         <StatusPill status={task.status} />
                         {task.dueDate && (
-                          <span className={`text-[11px] ${late ? "font-medium text-red-400" : "text-slate-400"}`}>
+                          <span className={`text-[11px] ${late ? "font-medium text-red-400" : "text-[#7d848f]"}`}>
                             {late ? "Overdue · " : "Due "}{formatDate(task.dueDate)}
                           </span>
                         )}
                       </div>
 
                       {task.adminComment && task.status !== "COMPLETED" && (
-                        <div className="mt-3 rounded-xl bg-red-500/10 px-3 py-2">
+                        <div className="mt-3 rounded-lg bg-red-500/10 px-3 py-2">
                           <p className="text-[11px] font-medium text-red-200">Sent back by admin</p>
                           <p className="mt-0.5 text-xs text-red-300">{task.adminComment}</p>
                         </div>
@@ -148,18 +148,18 @@ export default function MyTask() {
                     <div className="shrink-0">
                       {task.status === "PENDING" && (
                         <button onClick={() => start(task.id)}
-                          className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-3.5 py-2 text-xs font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400">
+                          className="btn-primary text-xs">
                           Start task
                         </button>
                       )}
                       {task.status === "IN_PROGRESS" && (
                         <button onClick={() => openProof(task)}
-                          className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-3.5 py-2 text-xs font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400">
+                          className="btn-primary text-xs">
                           Submit proof
                         </button>
                       )}
                       {task.status === "COMPLETED" && task.qualityRating > 0 && (
-                        <span className="text-xs text-slate-400">Rated {task.qualityRating}/5</span>
+                        <span className="text-xs text-[#7d848f]">Rated {task.qualityRating}/5</span>
                       )}
                     </div>
                   </div>
@@ -171,18 +171,18 @@ export default function MyTask() {
       </section>
 
       {proofFor && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm p-4 sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70  p-4 sm:items-center">
           <div className="absolute inset-0" onClick={() => setProofFor(null)} aria-hidden="true" />
           <div role="dialog" aria-modal="true" aria-label="Submit proof of work"
-            className="relative w-full max-w-lg card p-6 shadow-2xl">
-            <h2 className="text-base font-semibold text-white">Submit proof of work</h2>
-            <p className="mt-0.5 text-xs text-slate-400">
+            className="relative w-full max-w-lg card p-6 shadow-xl">
+            <h2 className="text-base font-semibold text-[#f5f6f7]">Submit proof of work</h2>
+            <p className="mt-0.5 text-xs text-[#7d848f]">
               An admin reviews this and either approves the task or sends it back.
             </p>
 
             <form onSubmit={submitProof} className="mt-5 space-y-4">
               <div>
-                <label htmlFor="p-link" className="mb-1.5 block text-xs font-medium text-slate-300">
+                <label htmlFor="p-link" className="mb-1.5 block text-xs font-medium text-[#9aa1ab]">
                   Repository or PR link
                 </label>
                 <input id="p-link" value={proof.proofLink}
@@ -190,7 +190,7 @@ export default function MyTask() {
                   placeholder="https://github.com/you/repo" className={field} />
               </div>
               <div>
-                <label htmlFor="p-desc" className="mb-1.5 block text-xs font-medium text-slate-300">
+                <label htmlFor="p-desc" className="mb-1.5 block text-xs font-medium text-[#9aa1ab]">
                   What did you do?
                 </label>
                 <textarea id="p-desc" rows={3} value={proof.proofDescription}
@@ -201,11 +201,11 @@ export default function MyTask() {
 
               <div className="flex justify-end gap-2 pt-1">
                 <button type="button" onClick={() => setProofFor(null)}
-                  className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 transition hover:bg-white/10">
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-[#7d848f] transition hover:bg-[#131519]">
                   Cancel
                 </button>
                 <button type="submit" disabled={busy}
-                  className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400 disabled:opacity-60">
+                  className="btn-primary">
                   {busy ? "Submitting…" : "Submit for review"}
                 </button>
               </div>

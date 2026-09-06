@@ -15,7 +15,7 @@ const RATING_LABELS = {
 function RatingPicker({ value, onChange }) {
   return (
     <div>
-      <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-[#7d848f]">
         Quality rating <span className="text-red-300">*</span>
       </p>
       <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -26,16 +26,16 @@ function RatingPicker({ value, onChange }) {
             onClick={() => onChange(n)}
             aria-pressed={value === n}
             title={RATING_LABELS[n]}
-            className={`h-9 w-9 rounded-xl text-sm font-semibold transition ${
+            className={`h-9 w-9 rounded-lg text-sm font-semibold transition ${
               value === n
-                ? "bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-[0_8px_20px_-10px_rgba(124,92,255,.9)]"
-                : "border border-white/10 text-slate-400 hover:border-white/25 hover:text-white"
+                ? "border-[#2a2e35] bg-[#131519] font-medium text-[#f5f6f7]"
+                : "border border-[#1d2025] text-[#7d848f] hover:border-[#2a2e35] hover:text-[#f5f6f7]"
             }`}
           >
             {n}
           </button>
         ))}
-        <span className="ml-1 text-xs text-slate-400">
+        <span className="ml-1 text-xs text-[#7d848f]">
           {value ? RATING_LABELS[value] : "Pick a score to enable approval"}
         </span>
       </div>
@@ -109,7 +109,7 @@ export default function TaskReview() {
       {banner && (
         <div
           role="alert"
-          className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${
+          className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${
             banner.tone === "ok"
               ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-200"
               : "border border-amber-500/25 bg-amber-500/10 text-amber-200"
@@ -125,7 +125,7 @@ export default function TaskReview() {
       {loading ? (
         <div className="space-y-4">
           {[0, 1].map((i) => (
-            <div key={i} className="h-48 animate-pulse rounded-2xl bg-white/[0.04]" />
+            <div key={i} className="h-48 animate-pulse rounded-[10px] bg-[#0e1013]" />
           ))}
         </div>
       ) : tasks.length === 0 ? (
@@ -135,8 +135,8 @@ export default function TaskReview() {
               <path d="M4 10.5l3.5 3.5L16 6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <p className="mt-3 text-sm font-medium text-white">Nothing to review</p>
-          <p className="mt-1 text-xs text-slate-400">Every submitted task has been handled.</p>
+          <p className="mt-3 text-sm font-medium text-[#f5f6f7]">Nothing to review</p>
+          <p className="mt-1 text-xs text-[#7d848f]">Every submitted task has been handled.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -144,23 +144,23 @@ export default function TaskReview() {
             <article key={task.id} className="card p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h2 className="text-sm font-semibold text-white">{task.name}</h2>
+                  <h2 className="text-sm font-semibold text-[#f5f6f7]">{task.name}</h2>
                   {task.description && (
-                    <p className="mt-0.5 text-xs text-slate-400">{task.description}</p>
+                    <p className="mt-0.5 text-xs text-[#7d848f]">{task.description}</p>
                   )}
                 </div>
-                <span className="rounded-full bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-200 ring-1 ring-inset ring-white/10">
+                <span className="rounded-full bg-[#131519] px-2.5 py-1 text-xs font-medium text-[#c3c8cf] ring-1 ring-inset ring-[#1d2025]">
                   Awaiting review
                 </span>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#7d848f]">
                 {task.dueDate && <span>Due {formatDate(task.dueDate)}</span>}
                 <span className="font-mono">Employee {task.assignedTo}</span>
               </div>
 
-              <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+              <div className="mt-4 rounded-lg border border-white/[0.06] bg-[#0b0c0f] p-4">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-[#7d848f]">
                   Proof of work
                 </p>
 
@@ -169,7 +169,7 @@ export default function TaskReview() {
                     href={task.proofLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-flex max-w-full items-center gap-1.5 text-sm text-violet-300 hover:text-violet-200"
+                    className="mt-2 inline-flex max-w-full items-center gap-1.5 text-sm text-[#c3c8cf] hover:text-[#f5f6f7]"
                   >
                     <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8">
                       <path
@@ -183,7 +183,7 @@ export default function TaskReview() {
                 )}
 
                 {task.proofDescription && (
-                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-300">
+                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-[#9aa1ab]">
                     {task.proofDescription}
                   </p>
                 )}
@@ -200,7 +200,7 @@ export default function TaskReview() {
                 <button
                   onClick={() => approve(task.id)}
                   disabled={busy || !ratings[task.id]}
-                  className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 shadow-[0_10px_26px_-12px_rgba(16,185,129,.9)] transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="rounded-lg bg-[#4ade80] px-4 py-2 text-sm font-semibold text-[#08090b] transition hover:bg-[#6ee7a0] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Approve
                 </button>
@@ -217,7 +217,7 @@ export default function TaskReview() {
               </div>
 
               {rejectFor === task.id && (
-                <form onSubmit={reject} className="mt-4 rounded-xl border border-red-500/25 bg-red-500/10 p-4">
+                <form onSubmit={reject} className="mt-4 rounded-lg border border-red-500/25 bg-red-500/10 p-4">
                   <label htmlFor={`c-${task.id}`} className="block text-xs font-medium text-red-200">
                     What needs fixing?
                   </label>
@@ -239,14 +239,14 @@ export default function TaskReview() {
                         setRejectFor(null);
                         setComment("");
                       }}
-                      className="rounded-xl px-3 py-1.5 text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white"
+                      className="rounded-lg px-3 py-1.5 text-sm font-medium text-[#7d848f] transition hover:bg-[#0e1013] hover:text-[#f5f6f7]"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={busy}
-                      className="rounded-xl bg-red-500 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-red-400 disabled:opacity-60"
+                      className="rounded-lg bg-[#f0656f] px-3.5 py-1.5 text-sm font-medium text-[#f5f6f7] transition hover:bg-[#f68d95] disabled:opacity-60"
                     >
                       {busy ? "Sending…" : "Send back"}
                     </button>

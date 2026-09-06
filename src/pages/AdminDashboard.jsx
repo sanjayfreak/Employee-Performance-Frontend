@@ -50,13 +50,13 @@ export default function AdminDashboard() {
       subtitle="Performance across every employee"
       actions={
         <Link to="/assign"
-          className="ml-auto rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-3.5 py-2 text-sm font-medium text-white shadow-[0_10px_26px_-12px_rgba(124,92,255,.9)] transition hover:from-violet-400 hover:to-indigo-400">
+          className="btn-primary ml-auto">
           Assign task
         </Link>
       }
     >
       {error && (
-        <div role="alert" className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        <div role="alert" className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
           {error}
         </div>
       )}
@@ -78,64 +78,64 @@ export default function AdminDashboard() {
       </div>
 
       <section className="card">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] px-5 py-4">
-          <h2 className="text-sm font-semibold text-white">Employees</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#17191d] px-5 py-4">
+          <h2 className="text-sm font-semibold text-[#f5f6f7]">Employees</h2>
           <div className="relative w-full max-w-xs">
             <svg viewBox="0 0 20 20"
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5a616b]"
               fill="none" stroke="currentColor" strokeWidth="1.8">
               <circle cx="9" cy="9" r="5.5" /><path d="M13.5 13.5L17 17" strokeLinecap="round" />
             </svg>
             <input value={query} onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name or email" aria-label="Search employees"
-              className="w-full rounded-xl border border-white/[0.07] bg-white/[0.04] py-2 pl-9 pr-3 text-sm
-                         placeholder:text-slate-500 focus:border-violet-400/60 focus:bg-white/[0.07] focus:outline-none
-                         focus:ring-2 focus:ring-violet-500/25" />
+              className="w-full rounded-lg border border-[#17191d] bg-[#0e1013] py-2 pl-9 pr-3 text-sm
+                         placeholder:text-[#4b515a] focus:border-[#2a2e35] focus:bg-[#0d0e12] focus:outline-none
+                         focus:ring-2 focus:ring-0" />
           </div>
         </div>
 
         {loading ? (
           <div className="space-y-3 p-5">
-            {[0, 1, 2].map((i) => <div key={i} className="h-12 animate-pulse rounded-xl bg-white/[0.06]" />)}
+            {[0, 1, 2].map((i) => <div key={i} className="h-12 animate-pulse rounded-lg bg-[#131519]" />)}
           </div>
         ) : visible.length === 0 ? (
-          <p className="px-5 py-16 text-center text-sm text-slate-400">
+          <p className="px-5 py-16 text-center text-sm text-[#7d848f]">
             {employees.length === 0 ? "No employees registered yet." : "No one matches that search."}
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-sm">
               <thead>
-                <tr className="border-b border-white/[0.07] text-left text-xs text-slate-400">
+                <tr className="border-b border-[#17191d] text-left text-xs text-[#7d848f]">
                   <th className="px-5 py-3 font-medium">Employee</th>
                   <th className="px-5 py-3 font-medium">Score</th>
                   <th className="w-40 px-5 py-3 font-medium">Rating</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-[#141619]">
                 {visible.map((emp) => {
                   const s = Number(emp.score) || 0;
                   const b = band(s);
                   return (
-                    <tr key={emp.id} className="transition hover:bg-white/[0.05]">
+                    <tr key={emp.id} className="transition hover:bg-[#0e1013]">
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/[0.05] text-xs font-semibold text-slate-400">
+                          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#0e1013] text-xs font-semibold text-[#7d848f]">
                             {(emp.name || "?").charAt(0).toUpperCase()}
                           </span>
                           <div className="min-w-0">
-                            <p className="truncate font-medium text-white">{emp.name}</p>
-                            <p className="truncate text-xs text-slate-400">{emp.email}</p>
+                            <p className="truncate font-medium text-[#f5f6f7]">{emp.name}</p>
+                            <p className="truncate text-xs text-[#7d848f]">{emp.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="h-2 w-24 overflow-hidden rounded-full bg-white/[0.05]">
+                          <div className="h-2 w-24 overflow-hidden rounded-full bg-[#0e1013]">
                             <div className="h-full rounded-full"
                               style={{ width: `${Math.min(100, s)}%`, background: b.color }} />
                           </div>
-                          <span className="tabular-nums font-medium text-white">{pct(s)}</span>
+                          <span className="tabular-nums font-medium text-[#f5f6f7]">{pct(s)}</span>
                         </div>
                       </td>
                       <td className="px-5 py-3.5">

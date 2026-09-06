@@ -1,5 +1,5 @@
 /** Stat tile. `accent` supplies {soft, ink} for the status dot. */
-export default function Card({ title, value, hint, accent, icon }) {
+export default function Card({ title, value, hint, accent, icon, numeric = true }) {
   const a = accent || { soft: "rgba(139,146,156,.10)", ink: "#9aa1ab" };
   return (
     <div className="card p-4 transition-colors duration-200 hover:border-[#23262b]">
@@ -10,7 +10,7 @@ export default function Card({ title, value, hint, accent, icon }) {
         )}
       </div>
 
-      <div className="mt-2.5 font-mono text-[26px] font-medium leading-none tracking-[-0.03em] text-[#f5f6f7]">
+      <div className={`mt-2.5 leading-none text-[#f5f6f7] ${numeric ? "font-mono text-[26px] font-medium tracking-[-0.03em]" : "text-[24px] font-semibold tracking-[-0.02em]"}`}>
         {value}
       </div>
 

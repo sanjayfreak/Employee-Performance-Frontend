@@ -1,93 +1,127 @@
-export default function AuthShell({ title, subtitle, children, footer }) {
+/**
+ * Split auth screen.
+ *
+ * The left panel deliberately shows a real fragment of the product rather
+ * than a marketing bullet list — the same score card the dashboard renders,
+ * built from the same tokens, so there is no separate visual to maintain.
+ */
+
+const STEPS = [
+  "Admin assigns a task with a due date",
+  "Employee submits a link and a summary",
+  "Admin approves with a 1–5 quality rating",
+  "The score updates, and only then",
+];
+
+function ScorePanel() {
   return (
-    <div className="grid min-h-full lg:grid-cols-2">
-      {/* ---------- brand panel ---------- */}
-      <div className="relative hidden overflow-hidden lg:block">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(120% 100% at 0% 0%, #3B1D8F 0%, #1A1440 45%, #070A14 100%)",
-          }}
-        />
-        {/* soft light blooms */}
-        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-violet-500/30 blur-[90px]" />
-        <div className="absolute bottom-10 right-0 h-72 w-72 rounded-full bg-cyan-400/20 blur-[100px]" />
-        {/* grid texture */}
-        <div
-          className="absolute inset-0 opacity-[0.18]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)",
-            backgroundSize: "44px 44px",
-            maskImage: "radial-gradient(70% 70% at 40% 40%, #000 40%, transparent 100%)",
-            WebkitMaskImage: "radial-gradient(70% 70% at 40% 40%, #000 40%, transparent 100%)",
-          }}
-        />
+    <div className="card p-5">
+      <div className="flex items-baseline justify-between">
+        <span className="label">Composite</span>
+        <span className="font-mono text-[10px] text-[#5a616b]">weighted</span>
+      </div>
 
-        <div className="relative flex h-full flex-col justify-between p-12 text-white">
-          <div className="flex items-center gap-2.5">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 ring-1 ring-inset ring-white/20 backdrop-blur">
-              <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 14l3.5-4 3 2.5L16 5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span className="text-[15px] font-semibold">PerfTrack AI</span>
-          </div>
+      <div className="mt-2.5 flex items-end gap-2.5">
+        <span className="font-mono text-[40px] font-medium leading-none tracking-[-0.04em] text-[#f5f6f7]">78.4</span>
+        <span className="pb-1.5 font-mono text-[12px] text-[#4ade80]">+4.1</span>
+      </div>
 
-          <div className="max-w-md">
-            <h2 className="text-4xl font-semibold leading-[1.12] tracking-tight">
-              Performance you can{" "}
-              <span className="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">
-                actually explain.
+      <div className="mt-5 flex flex-col gap-2.5">
+        {[
+          { label: "Completion", weight: "40%", value: 82, tone: "#e8eaed" },
+          { label: "On time", weight: "30%", value: 64, tone: "#8b929c" },
+          { label: "Quality", weight: "30%", value: 80, tone: "#8b929c" },
+        ].map((row) => (
+          <div key={row.label}>
+            <div className="mb-1.5 flex justify-between">
+              <span className="text-[11px] text-[#7d848f]">
+                {row.label} <span className="text-[#4b515a]">{row.weight}</span>
               </span>
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-slate-300">
-              Every score breaks down into completion, timeliness and quality —
-              with AI analysis of what to work on next.
-            </p>
-            <ul className="mt-9 space-y-3.5 text-sm text-slate-300">
-              {[
-                "Scores weighted 40% completion, 30% on-time, 30% quality",
-                "Proof-of-work review with approve and reject",
-                "AI insight and course recommendations per employee",
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-violet-500/20 ring-1 ring-inset ring-violet-400/30">
-                    <svg viewBox="0 0 20 20" className="h-3 w-3 text-violet-200"
-                      fill="none" stroke="currentColor" strokeWidth="2.6">
-                      <path d="M4 10.5l3.5 3.5L16 6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                  {t}
-                </li>
-              ))}
-            </ul>
+              <span className="font-mono text-[11px] text-[#c3c8cf]">{row.value}</span>
+            </div>
+            <div className="h-[3px] rounded-full bg-[#17191d]">
+              <div className="h-full rounded-full" style={{ width: `${row.value}%`, background: row.tone }} />
+            </div>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-          <p className="text-xs text-slate-500">© {new Date().getFullYear()} PerfTrack AI</p>
+function FlowPanel() {
+  return (
+    <div className="flex flex-col gap-px overflow-hidden rounded-[10px] border border-[#17191d] bg-[#17191d]">
+      {STEPS.map((step, i) => (
+        <div key={step} className="flex items-center gap-3.5 bg-[#0b0c0f] px-4 py-3.5">
+          <span className="w-4 shrink-0 font-mono text-[11px] text-[#4b515a]">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <span className={`text-[13px] ${i === STEPS.length - 1 ? "text-[#e8eaed]" : "text-[#c3c8cf]"}`}>
+            {step}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function AuthShell({ title, subtitle, children, footer, variant = "signin" }) {
+  const register = variant === "register";
+
+  return (
+    <div className="grid min-h-full lg:grid-cols-[1fr_520px]">
+
+      {/* ---------- left: quiet proof panel ---------- */}
+      <div className="relative hidden overflow-hidden border-r border-[#17191d] p-11 lg:flex lg:flex-col">
+        <div className="grid-ground pointer-events-none absolute inset-0" aria-hidden="true" />
+
+        <div className="relative flex items-center gap-2.5">
+          <div className="grid h-[26px] w-[26px] place-items-center rounded-[7px] bg-[#e8eaed]">
+            <svg viewBox="0 0 20 20" className="h-[15px] w-[15px]" fill="none" stroke="#08090b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 14l3.5-4 3 2.5L16 5" />
+            </svg>
+          </div>
+          <span className="text-[14px] font-semibold tracking-[-0.01em] text-[#f5f6f7]">PerfTrack</span>
+        </div>
+
+        <div className="relative flex max-w-[460px] flex-grow flex-col justify-center">
+          <h1 className="text-[38px] font-semibold leading-[1.16] tracking-[-0.03em] text-[#f5f6f7] [text-wrap:pretty]">
+            {register ? "Three signals. One number. No mystery." : "Performance you can actually explain."}
+          </h1>
+          <p className="mt-4 text-[14px] leading-[1.7] text-[#7d848f]">
+            {register
+              ? "Proof of work is reviewed and rated by an admin before a task counts as done, so the score reflects what was actually delivered."
+              : "Every score breaks down into completion, timeliness and reviewed quality — with the weights shown, so nobody has to guess where a number came from."}
+          </p>
+
+          <div className="mt-10">{register ? <FlowPanel /> : <ScorePanel />}</div>
+        </div>
+
+        <div className="relative font-mono text-[11px] text-[#4b515a]">
+          © {new Date().getFullYear()} PerfTrack
         </div>
       </div>
 
-      {/* ---------- form panel ---------- */}
-      <div className="flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-sm rise">
+      {/* ---------- right: the form ---------- */}
+      <div className="flex items-center justify-center p-6 sm:p-11">
+        <div className="rise flex w-full max-w-[340px] flex-col">
+
           <div className="mb-8 flex items-center gap-2.5 lg:hidden">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 text-white">
-              <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 14l3.5-4 3 2.5L16 5" strokeLinecap="round" strokeLinejoin="round" />
+            <div className="grid h-[26px] w-[26px] place-items-center rounded-[7px] bg-[#e8eaed]">
+              <svg viewBox="0 0 20 20" className="h-[15px] w-[15px]" fill="none" stroke="#08090b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 14l3.5-4 3 2.5L16 5" />
               </svg>
             </div>
-            <span className="text-[15px] font-semibold text-white">PerfTrack AI</span>
+            <span className="text-[14px] font-semibold text-[#f5f6f7]">PerfTrack</span>
           </div>
 
-          <div className="card p-7">
-            <h1 className="text-xl font-semibold tracking-tight text-white">{title}</h1>
-            <p className="mt-1 text-sm text-slate-400">{subtitle}</p>
-            <div className="mt-6">{children}</div>
-          </div>
+          <h2 className="text-[22px] font-semibold tracking-[-0.02em] text-[#f5f6f7]">{title}</h2>
+          <p className="mt-1.5 text-[13px] text-[#6b7280]">{subtitle}</p>
 
-          <p className="mt-5 text-center text-sm text-slate-400">{footer}</p>
+          <div className="mt-7">{children}</div>
+
+          <p className="mt-4 text-center text-[13px] text-[#6b7280]">{footer}</p>
         </div>
       </div>
     </div>

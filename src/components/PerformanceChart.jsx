@@ -7,27 +7,22 @@ import { SERIES } from "../theme";
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0E1524]/95 px-3 py-2 text-xs shadow-2xl backdrop-blur">
-      <p className="font-medium text-white">{label}</p>
-      <p className="mt-0.5 text-slate-400">
-        Score{" "}
-        <span className="font-semibold tabular-nums text-violet-300">
-          {Math.round(payload[0].value)}
-        </span>
-      </p>
+    <div className="rounded-lg border border-[#23262b] bg-[#0b0c0f] px-3 py-2 shadow-xl">
+      <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#5a616b]">{label}</p>
+      <p className="mt-1 font-mono text-[15px] text-[#f5f6f7]">{Math.round(payload[0].value)}</p>
     </div>
   );
 }
 
-/** Score over time. Single series, so the heading names it — no legend needed. */
+/** Score over time. One white series — no legend needed. */
 export default function PerformanceChart({ history }) {
   if (!history?.length) {
     return (
-      <div className="grid h-[240px] place-items-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] text-center">
+      <div className="grid h-[220px] place-items-center rounded-lg border border-dashed border-[#17191d] text-center">
         <div>
-          <p className="text-sm font-medium text-slate-300">No history yet</p>
-          <p className="mt-1 text-xs text-slate-500">
-            Your score is recorded each time the dashboard loads.
+          <p className="text-[13px] text-[#9aa1ab]">No history yet</p>
+          <p className="mt-1 text-[11px] text-[#5a616b]">
+            A point is recorded when a task is assigned, approved or sent back.
           </p>
         </div>
       </div>
@@ -35,42 +30,39 @@ export default function PerformanceChart({ history }) {
   }
 
   return (
-    <div className="h-[240px] w-full">
+    <div className="h-[220px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={history} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
+        <AreaChart data={history} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="score-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={SERIES.score} stopOpacity={0.45} />
+              <stop offset="0%" stopColor={SERIES.score} stopOpacity={0.10} />
               <stop offset="100%" stopColor={SERIES.score} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="rgba(255,255,255,.06)" vertical={false} />
+          <CartesianGrid stroke="#141619" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 11, fill: "#8A93A6" }}
+            tick={{ fontSize: 10, fill: "#4b515a", fontFamily: "JetBrains Mono, monospace" }}
             tickLine={false}
-            axisLine={{ stroke: "rgba(255,255,255,.08)" }}
-            minTickGap={20}
+            axisLine={{ stroke: "#17191d" }}
+            minTickGap={24}
           />
           <YAxis
             domain={[0, 100]}
-            tick={{ fontSize: 11, fill: "#8A93A6" }}
+            tick={{ fontSize: 10, fill: "#4b515a", fontFamily: "JetBrains Mono, monospace" }}
             tickLine={false}
             axisLine={false}
-            width={34}
+            width={30}
           />
-          <Tooltip
-            content={<ChartTooltip />}
-            cursor={{ stroke: "rgba(255,255,255,.2)", strokeDasharray: "3 3" }}
-          />
+          <Tooltip content={<ChartTooltip />} cursor={{ stroke: "#2a2e35", strokeDasharray: "3 3" }} />
           <Area
             type="monotone"
             dataKey="score"
             stroke={SERIES.score}
-            strokeWidth={2.2}
+            strokeWidth={1.6}
             fill="url(#score-fill)"
-            dot={{ r: 3, fill: SERIES.score, strokeWidth: 0 }}
-            activeDot={{ r: 5, stroke: "#0E1524", strokeWidth: 2 }}
+            dot={{ r: 2.5, fill: SERIES.score, strokeWidth: 0 }}
+            activeDot={{ r: 4, fill: "#f5f6f7", stroke: "#08090b", strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>

@@ -99,7 +99,7 @@ export default function AuthShell({ title, subtitle, children, footer, variant =
         </div>
 
         <div className="relative font-mono text-[11px] text-[#4b515a]">
-          © {new Date().getFullYear()} PerfTrack
+          © {new Date().getFullYear()} EMP MONITOR
         </div>
       </div>
 

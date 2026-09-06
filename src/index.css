@@ -2,69 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------
+   Midnight Precision
+   Near-black ground, hairline borders, monospace numerals.
+   One strong element per screen: the inverted white primary button.
+   ------------------------------------------------------------------ */
+
 :root {
   color-scheme: dark;
-  --bg: #060912;
-  --surface: #0E1524;
-  --line: rgba(255, 255, 255, 0.08);
-  --text: #E7EBF4;
-  --muted: #8A93A6;
-  --accent: #7C5CFF;
+  --bg: #08090b;
+  --panel: #0b0c0f;
+  --line: #17191d;
+  --line-strong: #2a2e35;
+  --text: #e8eaed;
+  --text-bright: #f5f6f7;
+  --muted: #7d848f;
+  --faint: #5a616b;
 }
 
 html, body, #root { height: 100%; }
 
 body {
-  @apply m-0 text-slate-100 antialiased;
+  @apply m-0 antialiased;
   background-color: var(--bg);
-  background-image:
-    radial-gradient(900px 520px at 10% -12%, rgba(124, 92, 255, 0.20), transparent 62%),
-    radial-gradient(760px 420px at 100% -6%, rgba(34, 211, 238, 0.10), transparent 58%),
-    radial-gradient(700px 600px at 50% 120%, rgba(124, 92, 255, 0.08), transparent 60%);
-  background-attachment: fixed;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  font-family: Manrope, ui-sans-serif, system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-feature-settings: "cv11";
 }
 
 @layer components {
-  /* Raised panel: hairline border, inner highlight, deep drop shadow. */
+
+  /* Flat panel. No blur, no glow — the border does the work. */
   .card {
-    @apply rounded-2xl border border-white/[0.07] bg-[#0E1524]/85 backdrop-blur-xl;
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
-      0 18px 40px -24px rgba(0, 0, 0, 0.9);
+    @apply rounded-[10px] border border-[#17191d] bg-[#0b0c0f];
+  }
+
+  /* Small uppercase monospace label. The detail that reads as precise. */
+  .label {
+    @apply font-mono text-[10px] uppercase tracking-[0.12em] text-[#5a616b];
   }
 
   .field {
-    @apply w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm
-           text-slate-100 outline-none transition placeholder:text-slate-500
-           focus:border-violet-400/60 focus:bg-white/[0.07] focus:ring-2 focus:ring-violet-500/25;
+    @apply w-full rounded-lg border border-[#1d2025] bg-[#0b0c0f] px-3.5 py-2.5 text-sm
+           text-[#e8eaed] outline-none transition placeholder:text-[#4b515a]
+           focus:border-[#2a2e35] focus:bg-[#0d0e12];
   }
 
+  /* The only strong element on a screen. */
   .btn-primary {
-    @apply rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2.5 text-sm
-           font-medium text-white transition
-           hover:from-violet-400 hover:to-indigo-400 disabled:opacity-60;
-    box-shadow: 0 10px 26px -12px rgba(124, 92, 255, 0.9);
+    @apply rounded-lg bg-[#f5f6f7] px-4 py-2.5 text-sm font-semibold text-[#08090b]
+           transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .btn-ghost {
-    @apply rounded-xl border border-white/10 px-4 py-2 text-sm font-medium text-slate-300
-           transition hover:border-white/20 hover:bg-white/5 hover:text-white;
+    @apply rounded-lg border border-[#1d2025] px-4 py-2 text-sm font-medium text-[#9aa1ab]
+           transition hover:border-[#2a2e35] hover:text-[#f5f6f7];
   }
 
-  .rise { animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  /* Faint graph-paper ground for the auth screen only. */
+  .grid-ground {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .rise { animation: rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
 }
 
 @keyframes rise {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: none; }
 }
 
-* { scrollbar-width: thin; scrollbar-color: #263149 transparent; }
+* { scrollbar-width: thin; scrollbar-color: #23262b transparent; }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: #263149; border-radius: 8px; }
-*::-webkit-scrollbar-thumb:hover { background: #33405e; }
+*::-webkit-scrollbar-thumb { background: #23262b; border-radius: 8px; }
+*::-webkit-scrollbar-thumb:hover { background: #2f333a; }
 *::-webkit-scrollbar-track { background: transparent; }
 
-::selection { background: rgba(124, 92, 255, 0.35); }
+::selection { background: #2a2e35; color: #f5f6f7; }
